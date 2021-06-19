@@ -1,0 +1,10 @@
+musical_donut
+
+__pycache__
+*.bak
+*.pyc
+
+.env
+.vscode
+
+migrations
