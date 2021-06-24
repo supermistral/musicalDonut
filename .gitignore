@@ -7,4 +7,6 @@ __pycache__
 .env
 .vscode
 
+*.sqlite3
+
 migrations

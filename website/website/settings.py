@@ -43,10 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     
+    'sass_processor',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
+
     'accounts',
     'articles',
 ]
@@ -69,7 +71,9 @@ ROOT_URLCONF = 'website.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -134,6 +138,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
@@ -151,6 +157,9 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 
+AUTH_USER_MODEL = 'accounts.User'
+
+
 # Rest Settings
 
 REST_FRAMEWORK = {
@@ -159,6 +168,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
 }
 
@@ -167,10 +177,16 @@ REST_FRAMEWORK = {
 
 REST_USE_JWT = True
 
+JWT_AUTH_COOKIE = 'jwt-auth'
+
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of allauth
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+REST_AUTH_SERIALIZERS = {
+    'LOGIN_SERIALIZER': 'accounts.serializers.CustomLoginSerializer',
+}
 
 
 # JWT Settings
@@ -189,3 +205,16 @@ SIMPLE_JWT = {
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
+
+
+# SASS Settings
+# В шаблонах использовать load sass_tags
+# и подключать link href={ sass_src 'pathToScss' }
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'sass_processor.finders.CssFinder',
+]
+
+SASS_PROCESSOR_ROOT = STATIC_ROOT

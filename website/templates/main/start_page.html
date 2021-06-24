@@ -1,0 +1,45 @@
+{% extends 'index.html' %}
+
+
+{% block content %}
+
+<div id="header">
+    <div class="header-name">Musical Donut</div>
+</div>
+<div id="content">
+    <div class="content__first">
+        <div class="last-article">
+        {% if last-article %}
+            <img src="" alt="Последняя статья">
+            <div class="last-article__description">
+                <div class="section">
+                    {{ last-article.section.name }}
+                </div>
+                <div class="name">
+                    {{ last-article.name }}
+                </div>
+            </div>
+        {% else %}
+            <span>Статьи скоро появятся</span>
+        {% endif %}
+        </div>
+        <div class="musical-playlist"></div>
+    </div>
+    <div class="content__second">
+    {% if sections %}
+    {% for section in sections %}
+        <div class="section-cover">
+            <img src="" alt="...">
+            <div class="section-name">
+                {{ section.name }}
+            </div>
+            <div class="section-">
+                {{}}
+            </div>
+        </div>
+    {% endfor %}
+    
+    </div>
+</div>
+
+{% endblock %}

@@ -17,13 +17,18 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from . import views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # path('api-auth/', include('accounts.urls')),
-    # path('api-articles/', include('aricles.urls')),
+    path('api-auth/', include('accounts.urls')),
+    path('api-articles/', include('articles.urls')),
+    
+    # path('', views.main_page, name="main_page"),
+    path('', views.ArticleList.as_view(), name="main_page"),
+    path('section/<slug:slug>/', views.SectionDetail.as_view(), name="section_page"),
 ]
 
 if settings.DEBUG:

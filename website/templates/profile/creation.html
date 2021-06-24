@@ -1,0 +1,20 @@
+{% block content %}
+
+<div class="main">
+    <div class="header">
+        <div class="logout">
+            <a href=" {% url 'rest_logout' %}">Выйти</a>
+        </div>
+    </div>
+    <div class="article-content">
+        <div class="article-menu">
+            <div>Статьи</div>
+            <div>Песни</div>
+            <div>Исполнители</div>
+        </div>
+        <div class="article-creation">
+        </div>
+    </div>
+</div>
+
+{% endblock %}
