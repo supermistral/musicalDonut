@@ -37,3 +37,10 @@ def login(request):
 
     if request.method == "GET":
         return render(request, 'registration/login.html')
+
+
+def profile(request):
+    if request.user.is_authenticated:
+        return render(request, 'account/profile.html')
+    else:
+        return redirect('/')

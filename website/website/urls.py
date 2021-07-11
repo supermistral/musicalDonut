@@ -26,8 +26,8 @@ urlpatterns = [
     path('api-auth/', include('accounts.urls')),
     path('api-articles/', include('articles.urls')),
     
-    # path('', views.main_page, name="main_page"),
-    path('', views.ArticleList.as_view(), name="main_page"),
+    path('', views.main_page, name="main_page"),
+    # path('', views.ArticleList.as_view(), name="main_page"),
     path('section/<slug:slug>/', views.SectionDetail.as_view(), name="section_page"),
 ]
 

@@ -4,15 +4,17 @@ from django.views import generic
 
 
 def main_page(request):
-    last_article = Article.ready_objects.all()[-1]
-    sections = Section.objects.all()
+    last_article = Article.ready_objects.last()
+    articles = Article.ready_objects.all()
+    if articles.exists():
+        articles = articles.exclude(id=last_article['id'])
 
     return render(
         request, 
         'main/start_page.html', 
         context={
-            'last_article': last_article,
-            'sections': sections
+            'articles': articles,
+            'last_article': last_article
         }
     )
 

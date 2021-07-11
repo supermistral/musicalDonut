@@ -1,0 +1,20 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block body %}
+<div class="profile">
+    <div class="profile-menu">
+        <h3>{% trans "Account" %}</h3>
+        <ul>
+            <li><a href="{% url "profile" %}">{% trans "Profile" %}</a></li>
+            <li><a href="{% url "account_change_password" %}">{% trans "Change password" %}</a></li>
+            <li><a href="{% url "socialaccount_connections" %}">{% trans "Social Connections" %}</a></li>
+            <li><a href="{% url "account_email" %}">{% trans "Manage Email Accounts" %}</a></li>
+        </ul>
+    </div>
+    <div class="profile-content">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

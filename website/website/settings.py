@@ -43,6 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth.registration',
+    
     'sass_processor',
     'corsheaders',
     'rest_framework',
@@ -81,6 +86,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'articles.context_processors.sections',
             ],
         },
     },
@@ -182,6 +188,8 @@ JWT_AUTH_COOKIE = 'jwt-auth'
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of allauth
     'django.contrib.auth.backends.ModelBackend',
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 REST_AUTH_SERIALIZERS = {
@@ -218,3 +226,16 @@ STATICFILES_FINDERS = [
 ]
 
 SASS_PROCESSOR_ROOT = STATIC_ROOT
+
+
+# Allauth settings
+
+ACCOUNT_USERNAME_REQUIRED = False
+
+ACCOUNT_EMAIL_REQUIRED = True
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+LOGIN_REDIRECT_URL = '/'
