@@ -1,0 +1,22 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="content__section">
+    {% for article in articles %}
+        <div class="article-card">
+            <div class="article-img">
+                <img src="{{ article.image.url }}" alt="...">
+            </div>
+            <div class="article-cover">
+                <div class="name">
+                    <a href="{% url 'article' article.id %}">
+                        <span>{{ article.name }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <span>Статьи скоро появятся</span>
+    {% endfor %}
+</div>
+{% endblock %}

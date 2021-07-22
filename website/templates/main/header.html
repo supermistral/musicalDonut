@@ -1,14 +1,18 @@
-<div class="header">
+<div id="header">
     <div class="header__info">
-        <div class="header-name">Musical Donut</div>
+        <a class="header-name" href="/">Musical Donut</a>
+        <div class="search">
+            <form class="form-search" action="{% url 'search_articles' %}" method="get`">
+                <input type="search" placeholder="search..." name="search">
+                <button type="submit"></button>
+            </form>
+        </div>
     </div>
     <div class="header__sections">
-        {% if sections %}
-            {% for section in sections %}
-                <a class="section" href="{% url 'section_page' section.name_for_url %}">
-                    <div class="section-name">{{ section.name }}</div>
-                </div>
-            {% endfor %}
-        {% endif %}
+        {% for section in sections %}
+            <a class="section" href="{% url 'section_page' section.name_for_url %}">
+                <div class="section-name">{{ section.name }}</div>
+            </a>
+        {% endfor %}
     </div>
 </div>

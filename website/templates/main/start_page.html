@@ -1,37 +1,37 @@
 {% extends 'index.html' %}
 
 {% block content %}
-<div id="content">
-    <div class="content__first">
-        <div class="last-article">
+<div class="content__first">
+    <div class="article-card last-article">
         {% if last_article %}
-            <img src="" alt="Последняя статья">
-            <div class="last-article__description">
-                <div class="section">
+            <div class="article-img">
+                <img src="{{ last_article.image.url }}" alt="Последняя статья">
+            </div>
+            <div class="article-cover">
+                <a class="section" href="{% url 'section_page' last_article.section.name_for_url %}">
                     {{ last_article.section.name }}
-                </div>
-                <div class="name">
-                    {{ last_article.name }}
-                </div>
+                </a>
+                <div class="name">{{ last_article.name }}</div>
             </div>
         {% else %}
             <span>Статьи скоро появятся</span>
         {% endif %}
-        </div>
-        <div class="musical-playlist"></div>
     </div>
-    <div class="content__second">
-    {% if articles %}
-        {% for article in articles %}
-            <div class="article-cover">
-                <img src="{{ article.image }}" alt="...">
-                <div class="article-section">{{ article.section.name }}</div>
-                <div class="article-name">{{ article.name }}</div>
+    <div class="musical-playlist"></div>
+</div>
+<div class="content__second">
+    {% for article in articles %}
+        <div class="article-card">
+            <div class="article-img">
+                <img src="{{ article.image.url }}" alt="...">
             </div>
-        {% endfor %}
-    {% else %}
-        <span>Статьи скоро появятся</span>
-    {% endif %}
-    </div>
+            <div class="article-cover">
+                <a class="section" href="{% url 'section_page' article.section.name_for_url %}">
+                    {{ article.section.name }}
+                </a>
+                <div class="name">{{ article.name }}</div>
+            </div>
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}
