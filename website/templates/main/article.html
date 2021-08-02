@@ -1,10 +1,11 @@
 {% extends 'index.html' %}
 
-{% block content %}
+{% block main_content %}
+{% load music_refs %}
 <div class="article">
     <h2 class="name">{{ article.name }}</h1>
     {% if article.song %}
-        <div class="article-song song__info">
+        <div class="article-song song__data">
             <h3 class="song-name">{{ article.song.singer.name }} - {{ article.song.name }}</h3>
             {% if article.song.genre %}
                 <h4 class="song-genre">Жанр - {{ article.song.genre }}</h4>
@@ -20,10 +21,14 @@
     {% for subdivision in article.subdivisions.all %}
         <div class="subdivision">
             {% if subdivision.song %}
-                <div class="song__info">
+                <div class="song__data">
                     <h3 class="song-name">{{ subdivision.song.singer.name }} - {{ subdivision.song.name }}</h3>
-                    <h4 class="song-genre">{{ subdivision.song.genre }}</h4>
-                    <h4 class="song-release">{{ subdivision.song.date_release }}</h4>
+                    {% if subdivision.song.genre %}
+                        <h4 class="song-genre">Жанр - {{ subdivision.song.genre }}</h4>
+                    {% endif %}
+                    {% if subdivision.song.date_release %}
+                        <h4 class="song-release">Релиз - {{ subdivision.song.date_release }}</h4>
+                    {% endif %}
                 </div>
             {% elif subdivision.name %}
                 <h3 class="subdivision-name">{{ subdivision.name }}</h3>
@@ -111,7 +116,21 @@
             {% endfor %}
             {% if subdivision.song %}
                 <div class="song__refs">
-                <!-- Дработать -->
+                    <div class="song__container">
+                        {% music_refs vk=subdivision.song.ref_vk yandex=subdivision.song.ref_yandex spotify=subdivision.song.ref_spotify apple=subdivision.song.ref_apple subdivision=article.song.ref_youtube deezer=subdivision.song.ref_deezer as refs %}
+                            {% for ref in refs %}
+                                {% if ref.refvalue %}
+                                    <div class="song" data-service="{{ ref.refkey }}">
+                                        {% autoescape off %}{{ ref.refvalue }}{% endautoescape %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                    </div>
+                    <div class="song__info">
+                        <div class="settings">
+                            <i class="fas fa-angle-double-right"></i>
+                        </div>
+                    </div>
                 </div>
             {% endif %}
         </div>
@@ -124,46 +143,24 @@
         <div class="song__refs">
             <!-- Адаптировать под обычные треки -->
             {% if article.song.is_album %}
-                <div class="song__playlist">
-                    {% if article.song.ref_vk %}
-                        <div class="playlist" data-service="vk">
-                            {% autoescape off %}{{ article.song.ref_vk}}{% endautoescape %}   
-                        </div>
-                    {% endif %}
-                    {% if article.song.ref_yandex %}
-                        <div class="playlist active" data-service="yandex">
-                            {% autoescape off %}{{ article.song.ref_yandex}}{% endautoescape %}   
-                        </div>
-                    {% endif %}
-                    {% if article.song.ref_spotify %}
-                        <div class="playlist" data-service="spotify">
-                            {% autoescape off %}{{ article.song.ref_spotify}}{% endautoescape %}   
-                        </div>
-                    {% endif %}
-                    {% if article.song.ref_apple %}
-                        <div class="playlist" data-service="apple">
-                            {% autoescape off %}{{ article.song.ref_apple}}{% endautoescape %}   
-                        </div>
-                    {% endif %}
-                    {% if article.song.ref_youtube %}
-                        <div class="playlist" data-service="youtube">
-                            {% autoescape off %}{{ article.song.ref_youtube}}{% endautoescape %}   
-                        </div>
-                    {% endif %}
-                    {% if article.song.ref_deezer %}
-                        <div class="playlist" data-service="deezer">
-                            {% autoescape off %}{{ article.song.ref_deezer}}{% endautoescape %}   
-                        </div>
-                    {% endif %}
+                <div class="song__container playlist">
+                    {% music_refs vk=article.song.ref_vk yandex=article.song.ref_yandex spotify=article.song.ref_spotify apple=article.song.ref_apple youtube=article.song.ref_youtube deezer=article.song.ref_deezer as refs %}
+                        {% for ref in refs %}
+                            {% if ref.refvalue %}
+                                <div class="song" data-service="{{ ref.refkey }}">
+                                    {% autoescape off %}{{ ref.refvalue }}{% endautoescape %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                 </div>
             {% endif %}
             <div class="song__info">
                 <div class="settings">
                     <i class="fas fa-angle-double-right"></i>
                 </div>
-                {% include 'articles/music_refs.html' %}
             </div>
         </div>
     {% endif %}
+    {% include 'articles/music_refs.html' %}
 </div>
 {% endblock %}

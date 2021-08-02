@@ -80,14 +80,18 @@ class Song(models.Model):
     ref_youtube = models.CharField(max_length=500, blank=True, null=True)
     ref_deezer = models.CharField(max_length=500, blank=True, null=True)
 
-    def replace_ref_width(self, ref):
+    def replace_ref_width(self, ref, height=150):
         if not ref:
             return ref
         regex = re.compile(r' height=\W\d+\W ')
-        return regex.sub(' height="500" ', ref)
+        return regex.sub(f' height="{height}" ', ref)
 
     def save(self, *args, **kwargs):
         if self.is_album:
+            self.ref_yandex = self.replace_ref_width(self.ref_yandex, 500)
+            self.ref_spotify = self.replace_ref_width(self.ref_spotify, 500)
+            self.ref_apple = self.replace_ref_width(self.ref_apple, 500)
+        else:
             self.ref_yandex = self.replace_ref_width(self.ref_yandex)
             self.ref_spotify = self.replace_ref_width(self.ref_spotify)
             self.ref_apple = self.replace_ref_width(self.ref_apple)

@@ -89,78 +89,234 @@ const sliderHandler = () => {
 };
 
 const musicSliderHandler = () => {
-    const musicRefs = document.querySelectorAll('.music-refs');
-    const lengthOfStep = musicRefs[0].querySelector('.ref-item').offsetHeight;
+    // Список всех песен
+    const songRefs = document.querySelectorAll('.song__refs');
+    if (songRefs.length === 0)
+        return;
 
-    musicRefs.forEach(musicItem => {
-        const refItems = musicItem.querySelectorAll('.ref-item');
-        let musicSlider = musicItem.querySelector('.music-slider');
-        // Начальный индекс массива рефов
-        let currentIndex = 0;
-        const topOffsetSlider = (refItems[0].offsetHeight - musicSlider.offsetHeight) / 2;
+    // элемент с настройкой ссылок песни
+    let musicItem = document.querySelector('.music-refs');
 
-        const moveSlider = () => {
-            const step = currentIndex * lengthOfStep + topOffsetSlider;
-            musicSlider.style.transform = `translateY(${step}px)`;
+    const refItems = musicItem.querySelectorAll('.ref-item');
+    if (refItems.length === 0) 
+        return;
 
-            // Поставить актив картинке напротив
-            for (let i = 0; i < refItems.length; ++i) {
-                if (refItems[i].classList.contains("active")) {
-                    refItems[i].classList.remove("active");
+    const lengthOfStep = refItems[0].offsetHeight;
+        
+    // Слайдер
+    let musicSlider = musicItem.querySelector('.music-slider');
+    let musicRefsIndex = {
+        firstIndex: 0,
+        lastIndex: refItems.length - 1,
+        indicesOfVisible: Array.from(Array(refItems.length), (v, k) => k),
+        updateFirstIndex: function(newIndex) {
+            if (newIndex === null) {
+                return;
+            }
+            refItems[this.firstIndex].classList.remove('first');
+            this.firstIndex = newIndex;
+            refItems[this.firstIndex].classList.add('first');
+        },
+        updateLastIndex: function(newIndex) {
+            if (newIndex === null) {
+                return;
+            }
+            refItems[this.lastIndex].classList.remove('last');
+            this.lastIndex = newIndex;
+            refItems[this.lastIndex].classList.add('last');
+        },
+    };
+
+    // Начальный индекс массива рефов и соответствующий сервис
+    let currentService = localStorage.getItem('musicService') || 'apple';
+    let currentIndex = (() => {
+        for (let i = 0; i < refItems.length; ++i) {
+            if (refItems[i].dataset.service === currentService) {
+                return i;
+            }
+        }
+        return 0;
+    })();
+
+    const setMusicService = (service) => {
+        localStorage.setItem('musicService', service);
+    }
+    
+    const setActiveSongs = (service) => {
+        songRefs.forEach(songRef => {
+            const songContainer = songRef.querySelector('.song__container');
+
+            let activeSongBefore = null;
+            for (let el of songContainer.children) {
+                if (el.classList.contains('active')) {
+                    el.classList.remove("active");
+                    activeSongBefore = el;
                 }
             }
-            refItems[currentIndex].classList.add("active");
+
+            const song = songContainer.querySelector(`div[data-service=${service}]`);
+            if (song) {
+                song.classList.add('active');
+            } else if (activeSongBefore !== null) {
+                activeSongBefore.classList.add('active');
+            } else {
+                songContainer.children[0].classList.add('active');
+            }
+        });
+    }
+
+    // разница для корректного перемещения слайдера между блоками
+    const topOffsetSlider = (refItems[musicRefsIndex.firstIndex].offsetHeight - musicSlider.offsetHeight) / 2;
+
+    const moveSlider = (setActiveFlag = true) => {
+        const step = musicRefsIndex.indicesOfVisible[currentIndex] * lengthOfStep + topOffsetSlider;
+        musicSlider.style.transform = `translateY(${step}px)`;
+
+        refItems[currentIndex].querySelector('input').checked = true;
+
+        if (setActiveFlag) {
+            const currentService = refItems[currentIndex].dataset.service; 
+            setActiveSongs(currentService);
+            setMusicService(currentService);
+        }
+    };
+
+    refItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (e.target.tagName === "INPUT") {
+                const targetId = +e.target.id.replace(/[^\d]/g, '');
+                currentIndex = targetId - 1;
+
+                moveSlider();
+            }
+        });
+    });
+
+    musicSlider.addEventListener('mousedown', e => {
+        e.preventDefault();
+        musicSlider.classList.add("active");
+
+        const shiftY = e.clientY - musicSlider.getBoundingClientRect().top;
+        const diffHeight = musicItem.offsetHeight - musicSlider.offsetHeight;
+
+        const mouseMoveHandler = event => {
+            let top = event.clientY - shiftY - musicItem.getBoundingClientRect().top;
+            if (top < 0) {
+                top = 0;
+            } else if (top > diffHeight) {
+                top = diffHeight;
+            }
+
+            musicSlider.style.transform = `translateY(${top}px)`;
         };
 
-        refItems.forEach(item => {
-            moveSlider();
+        const mouseUpHandler = event => {
+            const translateY = +musicSlider.style.transform.replace(/[^\d.]/g, '');
+            const indexOfVisible = Math.trunc((translateY + lengthOfStep / 2) / lengthOfStep);
+            currentIndex = musicRefsIndex.indicesOfVisible.indexOf(indexOfVisible);
 
-            item.addEventListener('click', (e) => {
-                if (e.target.tagName === "INPUT") {
-                    currentIndex = e.target.id - 1;
-                    moveSlider();
-                }
-            });
-        });
+            document.removeEventListener('mouseup', mouseUpHandler);
+            document.removeEventListener('mousemove', mouseMoveHandler);
 
-        musicSlider.addEventListener('mousedown', e => {
-            e.preventDefault();
-            musicSlider.classList.add("active");
-
-            const shiftY = e.clientY - musicSlider.getBoundingClientRect().top;
-            const diffHeight = musicItem.offsetHeight - musicSlider.offsetHeight;
-
-            const mouseMoveHandler = event => {
-                let top = event.clientY - shiftY - musicItem.getBoundingClientRect().top;
-                if (top < 0) {
-                    top = 0;
-                } else if (top > diffHeight) {
-                    top = diffHeight;
-                }
-
-                musicSlider.style.transform = `translateY(${top}px)`;
-            };
-
-            const mouseUpHandler = event => {
-                const translateY = +musicSlider.style.transform.replace(/[^\d.]/g, '');
-                currentIndex = Math.trunc((translateY + lengthOfStep / 2) / lengthOfStep);     
-
-                document.removeEventListener('mouseup', mouseUpHandler);
-                document.removeEventListener('mousemove', mouseMoveHandler);
-
-                musicSlider.classList.remove("active");
-                moveSlider();
-            };
-            
-            document.addEventListener('mousemove', mouseMoveHandler);
-            document.addEventListener('mouseup', mouseUpHandler)
-        });
+            musicSlider.classList.remove("active");
+            moveSlider(false);
+        };
         
-        musicSlider.ondragstart = () => false;
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler)
     });
+    
+    musicSlider.ondragstart = () => false;
+
+    songRefs.forEach(songItem => {
+        // элемент с песней / плейлистом
+        const songContainer = songItem.querySelector('.song__container');
+        // блок настроек для отображения слайдера
+        const songInfo = songItem.querySelector('.song__info');
+
+        const showMusicSlider = () => {
+            const mouseEnterHandler = event => {
+                event.preventDefault();
+                
+                const songWidgets = Array.from(songContainer.children);
+                musicRefsIndex.indicesOfVisible.fill(null);
+                
+                let firstIndex = null;
+                let lastIndex = 0;
+                let counterVisible = 0;
+
+                for (let i = 0; i < refItems.length; ++i) {
+                    let ref = refItems[i];
+
+                    if (!songWidgets.find(el => el.dataset.service === ref.dataset.service)) {
+                        ref.classList.add('hidden');
+                    } else {
+                        if (ref.classList.contains('hidden')) {
+                            ref.classList.remove('hidden');
+                        }
+                        if (firstIndex === null) {
+                            firstIndex = i;
+                        }
+                        lastIndex = i;
+                        musicRefsIndex.indicesOfVisible[i] = counterVisible++;
+                    }
+                }
+
+                musicRefsIndex.updateFirstIndex(firstIndex);
+                musicRefsIndex.updateLastIndex(lastIndex);
+
+                if (musicRefsIndex.indicesOfVisible[currentIndex] === null) {
+                    currentIndex = firstIndex;
+                }
+
+                // Начальная инициализаця
+                moveSlider(false);
+
+                songInfo.append(musicItem);
+
+                setTimeout(() => {
+                    musicItem.classList.add('active');
+                }, 0); 
+            };
+
+            const mouseLeaveHandler = event => {
+                musicItem.classList.remove('active');
+            };
+
+            songInfo.addEventListener('mouseenter', mouseEnterHandler);
+            songInfo.addEventListener('mouseleave', mouseLeaveHandler);
+        };
+
+        showMusicSlider();
+    });
+
+    setActiveSongs(currentService);
+};
+
+const searchFormClickHandler = () => {
+    const searchForm = document.querySelector('.search-form form');
+    if (searchForm) {
+        const input = searchForm.querySelector('input');
+        searchForm.querySelector('span').addEventListener('click', e => {
+            input.focus();
+        });
+
+        const button = searchForm.querySelector('button');
+        const isEmptyInput = el => {
+            const value = el.value.trim().length;
+            button.disabled = value === 0;
+        };
+
+        input.addEventListener('keyup', e => {
+            isEmptyInput(e.target);
+        });
+
+        isEmptyInput(input);
+    }
 };
 
 window.onload = () => {
+    searchFormClickHandler();
     imageInitClickHandler();
     sliderHandler();
     musicSliderHandler();

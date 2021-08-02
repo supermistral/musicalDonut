@@ -2,15 +2,23 @@
     <div class="header__info">
         <a class="header-name" href="/">Musical Donut</a>
         <div class="search">
-            <form class="form-search" action="{% url 'search_articles' %}" method="get`">
-                <input type="search" placeholder="search..." name="search">
-                <button type="submit"></button>
-            </form>
+            <div class="search-form">
+                <form action="{% url 'search_articles' %}" method="get">
+                    <span><i class="fa fa-search"></i></span>
+                    <input type="search" placeholder="найти..." name="search">
+                    <button type="submit">
+                        <i class="fas fa-arrow-circle-right"></i>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
     <div class="header__sections">
         {% for section in sections %}
-            <a class="section" href="{% url 'section_page' section.name_for_url %}">
+            <a class="section  
+                {% if section_target and section_target == section.name %}active{% endif %}" 
+                href="{% url 'section_page' section.name_for_url %}"
+            >
                 <div class="section-name">{{ section.name }}</div>
             </a>
         {% endfor %}

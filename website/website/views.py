@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.views import generic
 from django.db.models import Q
 from itertools import chain
+from django.http import Http404
 
 
 def main_page(request):
@@ -78,4 +79,12 @@ class ArticleDetail(generic.DetailView):
     model = Article
     template_name = 'main/article.html'
     context_object_name = 'article'
-    
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        articles = Article.ready_objects.all()
+
+        if not (obj in articles) and not self.request.user.is_staff:
+            raise Http404()
+            
+        return obj

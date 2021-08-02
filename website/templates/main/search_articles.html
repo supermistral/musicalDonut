@@ -1,18 +1,7 @@
 {% extends 'index.html' %}
 
-{% block content %}
+{% block main_content %}
 <div class="content__search">
-    {% for article in articles %}
-        <div class="article-card">
-            <div class="article-img">
-                <img src="{{ article.image.url }}" alt="...">
-            </div>
-            <div class="article-cover">
-                <div class="name">{{ article.name }}</div>
-            </div>
-        </div>
-    {% empty %}
-        <span>По вашему запросу ничего не найдено</span>
-    {% endfor %}
+    {% include 'articles/article_cards.html' with articles=articles empty_message='По вашему запросу ничего не найдено' %}
 </div>
 {% endblock %}

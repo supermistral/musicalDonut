@@ -1,20 +1,53 @@
-{% extends "account/base.html" %}
+{% extends "index.html" %}
 
 {% load i18n %}
 
-{% block body %}
+{% block title %}
+    Musical Donut - {% block head_title %}{% endblock %}
+{% endblock %}
+
+{% block main_content %}
 <div class="profile">
+    {% block body %}
+    
+    {% if messages %}
+    <div>
+      <strong>Messages:</strong>
+      <ul>
+        {% for message in messages %}
+        <li>{{message}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
     <div class="profile-menu">
         <h3>{% trans "Account" %}</h3>
         <ul>
+            {% if user.is_authenticated %}
             <li><a href="{% url "profile" %}">{% trans "Profile" %}</a></li>
-            <li><a href="{% url "account_change_password" %}">{% trans "Change password" %}</a></li>
+                {% if user.has_usable_password %}
+                <li><a href="{% url "account_change_password" %}">{% trans "Сменить пароль" %}</a></li>
+                {% else %}
+                <li><a href="{% url "account_set_password" %}">{% trans "Установить пароль" %}</a></li>
+                {% endif %}
+            <li><a href="{% url "account_reset_password" %}">{% trans "Сбросить пароль" %}</a></li>
+            <li><a href="{% url "account_logout" %}">{% trans "Выйти" %}</a></li>
             <li><a href="{% url "socialaccount_connections" %}">{% trans "Social Connections" %}</a></li>
             <li><a href="{% url "account_email" %}">{% trans "Manage Email Accounts" %}</a></li>
+                {% if user.is_staff %}
+                <li><a href="{% url "articles_preview" %}">{% trans "Превью статей" %}</a></li>
+                {% endif %}
+            {% else %}
+            <!-- Поставить ссылки на вход -->
+            <li><a href="{% url "account_login" %}">{% trans "Войти" %}</a></li>
+            {% endif %}
         </ul>
     </div>
     <div class="profile-content">
         {% block content %}{% endblock %}
     </div>
+    {% endblock %}
+    {% block extra_body %}{% endblock %}
 </div>
 {% endblock %}

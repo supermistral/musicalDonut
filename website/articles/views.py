@@ -5,6 +5,7 @@ from .serializers import *
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated, AllowAny
 from rest_framework import generics
 from django.views import generic
+from django.http import Http404
 
 
 class BaseViewForCreate(generics.ListCreateAPIView):
@@ -43,3 +44,15 @@ class SongListCreate(BaseViewForCreate):
 class SongDetail(BaseViewForUpdate):
     queryset = Song
     serializer_class = None
+
+
+class ArticlePreviewList(generic.ListView):
+    model = Article
+    template_name = 'main/section_page.html'
+    context_object_name = 'articles'
+
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            raise Http404()
+        return Article.objects.filter(is_active=False)
+    

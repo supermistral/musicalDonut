@@ -88,6 +88,9 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'articles.context_processors.sections',
             ],
+            'libraries': {
+                'music_refs': 'website.templatetags.music_refs',
+            }
         },
     },
 ]

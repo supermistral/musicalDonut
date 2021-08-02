@@ -23,14 +23,15 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api-auth/', include('accounts.urls')),
-    path('api-articles/', include('articles.urls')),
+    # path('auth/', include('accounts.urls')),
+    path('articles/', include('articles.urls')),
     
     path('', views.main_page, name="home"),
     # path('', views.ArticleList.as_view(), name="main_page"),
     path('section/<slug:slug>/', views.SectionDetail.as_view(), name="section_page"),
     path('search/', views.SearchArticlesList.as_view(), name="search_articles"),
     path('articles/<int:pk>/', views.ArticleDetail.as_view(), name="article"),
+    path('accounts/', include('accounts.urls')),
 ]
 
 if settings.DEBUG:

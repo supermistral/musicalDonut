@@ -1,22 +1,13 @@
 {% extends 'index.html' %}
 
-{% block content %}
+{% block header_including %}
+    {% with section_target=section.name %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block main_content %}
 <div class="content__section">
-    {% for article in articles %}
-        <div class="article-card">
-            <div class="article-img">
-                <img src="{{ article.image.url }}" alt="...">
-            </div>
-            <div class="article-cover">
-                <div class="name">
-                    <a href="{% url 'article' article.id %}">
-                        <span>{{ article.name }}</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    {% empty %}
-        <span>Статьи скоро появятся</span>
-    {% endfor %}
+    {% include 'articles/article_cards.html' with articles=articles %}
 </div>
 {% endblock %}

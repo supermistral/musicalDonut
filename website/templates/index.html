@@ -14,12 +14,21 @@
                 Musical Donut
             {% endblock %}
         </title>
+        {% block extra_head %}{% endblock %}
     </head>
     <body>
         <div id="wrapper">
-            {% include 'main/header.html' %}
+        
+            {% block header_including %}
+                {% if section_target %}
+                    {% include 'main/header.html' with section_target=section_target %}
+                {% else %}
+                    {% include 'main/header.html' %}
+                {% endif %}
+            {% endblock header_including %}
+
             <div id="content">
-                {% block content %}{% endblock %}
+                {% block main_content %}{% endblock %}
             </div>
         </div>
     </body>
