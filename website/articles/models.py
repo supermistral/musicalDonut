@@ -61,7 +61,7 @@ class Genre(models.Model):
 
 
 class Song(models.Model):
-    singer = models.ForeignKey(Singer, on_delete=models.CASCADE, related_name='songs')
+    # singer = models.ForeignKey(Singer, on_delete=models.CASCADE, related_name='songs')
     name = models.CharField(max_length=100)
     date_release = models.DateField(null=True, blank=True)
     genre = models.ForeignKey(
@@ -97,19 +97,74 @@ class Song(models.Model):
             self.ref_apple = self.replace_ref_width(self.ref_apple)
         return super().save(*args, **kwargs)
 
+    def _get_singers(self):
+        related_singers = SongSingerRelation.objects.filter(song=self)
+        singers_str = None
+
+        if related_singers.exists():
+            related_singers_is_feat = related_singers.filter(is_feat=True)
+            related_singers_is_not_feat = related_singers.filter(is_feat=False)
+            singers_str = ", ".join([obj.singer.name for obj in related_singers_is_not_feat])
+            
+            if related_singers_is_feat.exists():
+                singers_str += " feat. " + ", ".join([obj.singer.name for obj in related_singers_is_feat])
+        
+        return singers_str
+
     def __str__(self):
         param_album = "| Альбом" if self.is_album else ""
-        return f"{self.singer.name} -> {self.name} {param_album}" 
+        singers_str = self._get_singers()
+        if singers_str is None:
+            singers_str = "[исполнители не указаны]"
+        return f"{singers_str} -> {self.name} {param_album}"
+
+    def singers(self):
+        singers_str = self._get_singers()
+        if singers_str is None:
+            singers_str = "Неизвестен"
+        return singers_str
+
+    def full_name(self):
+        singers_str = self.singers()
+        return f"{singers_str} - {self.name}"
+
+    def singers_list(self):
+        related_singers = SongSingerRelation.objects.filter(song=self)
+        print(related_singers)
+        if related_singers.exists():
+            return [obj.singer.name for obj in related_singers]
+        return None
 
     class Meta:
-        ordering = ['singer__name']
         verbose_name = "Песня"
         verbose_name_plural = "Песни"
 
 
+class SongSingerRelation(models.Model):
+    song = models.ForeignKey(
+        Song, 
+        on_delete=models.CASCADE, 
+        related_name='related_singers',
+    )
+    singer = models.ForeignKey(
+        Singer, 
+        on_delete=models.CASCADE, 
+        related_name='related_songs',
+    )
+    is_feat = models.BooleanField(default=False)
+
+    def __str__(self):
+        is_feat_str = " (feat)" if self.is_feat else ""
+        return f"{self.singer.name} - {self.song.name}{is_feat_str}"
+
+    class Meta:
+        verbose_name = "Песня и связанные группы"
+        verbose_name_plural = "Песни и связанные группы"
+
+
 class Section(models.Model):
-    name = models.CharField(max_length=20, unique=True)
-    name_for_url = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=40, unique=True)
+    name_for_url = models.CharField(max_length=40, unique=True)
 
     def __str__(self):
         return self.name
@@ -136,12 +191,6 @@ class TextBlock(models.Model):
         blank=True,
         null=True
     )
-    # text_class = models.ForeignKey(
-    #     TextBlockClass, 
-    #     on_delete=models.SET_DEFAULT, 
-    #     default="center", 
-    #     related_name='textblocks'
-    # )
     text_classes_choices = (
         ('center', 'по центру'), 
         ('left', 'текст слева'), 
@@ -152,9 +201,14 @@ class TextBlock(models.Model):
     objects = TextBlockManager()
 
     def __str__(self):
-        temp_name = self.subdivision.name[:30] + ".." if len(self.subdivision.name) > 30 \
+        temp_name = self.subdivision.name[:30] + ".." if self.subdivision.name and len(self.subdivision.name) > 30\
             else self.subdivision.name
-        temp_text = self.text[:30] + ".." if len(self.text) > 30 else self.text
+        temp_text = ""
+        if self.text:
+            if len(self.text) > 30:
+                temp_text = self.text[:30] + ".."
+            else:
+                temp_text = self.text
         return f"{temp_name} -> {temp_text}"
 
     def save(self, *args, **kwargs):
@@ -171,7 +225,7 @@ class TextBlock(models.Model):
 
 
 class Article(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=200)
     section = models.ForeignKey(
         Section, 
         on_delete=models.SET_NULL, 
@@ -199,12 +253,19 @@ class Article(models.Model):
     date_release = models.DateTimeField()
     date_change = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    number = models.IntegerField(blank=True, null=True)
 
     objects = models.Manager()
     ready_objects = ArticleManager()
 
     def __str__(self):
-        return self.name
+        return f"{self.section.name} №{self.number}"
+
+    def save(self, *args, **kwargs):
+        if self.number is None:
+            objects = Article.objects.filter(section=self.section)
+            self.number = len(objects)
+        return super().save(*args, **kwargs)
 
     class Meta:
         ordering = ['-date_release']
@@ -228,9 +289,9 @@ class Subdivision(models.Model):
     )
 
     def __str__(self):
-        temp_name = self.name[:30] + ".." if len(self.name) > 30 else self.name
+        temp_name = self.name[:30] + ".." if self.name and len(self.name) > 30 else self.name
         if not temp_name and self.song:
-            temp_name = self.song.name
+            temp_name = self.song.full_name()
         return f"{self.article.name} -> {temp_name}"
 
     class Meta:

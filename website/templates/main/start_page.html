@@ -2,36 +2,22 @@
 
 {% block main_content %}
 <div class="content__first">
-    <div class="article-card last-article">
-        {% if last_article %}
-            <div class="article-img">
-                <img src="{{ last_article.image.url }}" alt="Последняя статья">
-            </div>
-            <div class="article-cover">
-                <a class="section" href="{% url 'section_page' last_article.section.name_for_url %}">
-                    {{ last_article.section.name }}
-                </a>
-                <div class="name">{{ last_article.name }}</div>
-            </div>
-        {% else %}
-            <span>Статьи скоро появятся</span>
-        {% endif %}
-    </div>
+    <h2>Последняя публикация</h2>
+    {% include 'articles/article_cards.html' with articles=last_article cover_section="1" card_classes="last-article" %}
+    
     <div class="musical-playlist"></div>
 </div>
 <div class="content__second">
-    {% for article in articles %}
-        <div class="article-card">
-            <div class="article-img">
-                <img src="{{ article.image.url }}" alt="...">
-            </div>
-            <div class="article-cover">
-                <a class="section" href="{% url 'section_page' article.section.name_for_url %}">
-                    {{ article.section.name }}
-                </a>
-                <div class="name">{{ article.name }}</div>
-            </div>
+    <div class="control-buttons">
+        <div class="button-sorting">
+            {% include 'additions/sorting.html' %}
         </div>
-    {% endfor %}
+        <div class="button-filters">
+            {% include 'additions/filters.html' with filter_singers=filter_singers %}
+        </div>
+    </div>
+    <div class="content__articles">
+        {% include 'articles/article_cards.html' with articles=articles cover_section="1" %}
+    </div>
 </div>
 {% endblock %}

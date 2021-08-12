@@ -9,15 +9,36 @@ from django.http import Http404
 def main_page(request):
     last_article = Article.ready_objects.first()
     articles = Article.ready_objects.all()
+    filter_singers = []
+
     if articles.exists():
         articles = articles.exclude(id=last_article.id)
+        all_items = [article.subdivisions.all() for article in articles]
+        all_items.append(articles)
+        songs = []
+
+        for queryset in all_items:
+            for queryset_item in queryset:
+                if queryset_item.song is not None:
+                    songs.append(queryset_item.song)
+
+        all_filter_singers_names = [song.singers_list() for song in songs]
+        filter_singers_names = []
+
+        for singer_list in all_filter_singers_names:
+            if singer_list is not None:
+                filter_singers_names += singer_list
+
+        sorted_filter_singers_names = sorted(set(filter_singers_names))
+        filter_singers = [{name: filter_singers_names.count(name)} for name in sorted_filter_singers_names]
 
     return render(
         request, 
         'main/start_page.html', 
         context={
             'articles': articles,
-            'last_article': last_article
+            'last_article': [last_article],     # must be list
+            'filter_singers': filter_singers
         }
     )
 

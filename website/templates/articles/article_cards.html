@@ -1,15 +1,43 @@
 {% for article in articles %}
-    <div class="article-card">
-        <div class="article-img">
-            <img src="{{ article.image.url }}" alt="...">
-        </div>
-        <div class="article-cover">
-            <div class="name">
-                <a href="{% url 'article' article.id %}">
-                    <span>{{ article.name }}</span>
-                </a>
+    <div class="article-card__wrapper{% if card_classes %} {{card_classes}}{% endif %}">
+        <div class="article-card">
+            <div class="article-img">
+                <img src="{{ article.image.url }}" alt="...">
+            </div>
+            <div class="article-cover">
+                {% if cover_section %}
+                    <a class="section" href="{% url 'section_page' article.section.name_for_url %}">
+                        {{ article.section.name }}
+                    </a>
+                {% endif %}
+                <div class="name{% if article.name|length > 130 %} short-name{% endif %}">
+                    <a href="{% url 'article' article.id %}">
+                        {% if article.name|length > 130 %}
+                            <span>{{ article.name|slice:":130" }}...</span>
+                            <span class="full-name">{{ article.name }}</span>
+                        {% else %}
+                            <span class="true-name">{{ article.name }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+            <div class="article-info">
+                <div class="info">
+                    <div class="date">
+                        <div class="date-release">
+                            <span>
+                                <i class="far fa-calendar-check"></i>
+                            </span> {{ article.date_release|date:"H:j d E" }}
+                        </div>
+                    </div>
+                    <div class="number">
+                        <div class="number-cover">№{{ article.number }}</div>
+                    </div>
+                </div>
+                {% include 'articles/song_preview.html' with article=article %}
             </div>
         </div>
+        
     </div>
 {% empty %}
     <span>{{ empty_message|default:"Статьи скоро появятся" }}</span>

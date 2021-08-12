@@ -315,9 +315,66 @@ const searchFormClickHandler = () => {
     }
 };
 
-window.onload = () => {
+const filtersClickHandler = () => {
+    const filtersButton = document.querySelector('.button-filters');
+    const filters = filtersButton.querySelector('.filters');
+    filters.addEventListener('click', e => {
+        e.preventDefault();
+        
+        document.body.className = "hidden";
+
+        const filterItems = filtersButton.querySelector('.filter-items'); 
+        const contentRect = document.getElementById('content').getBoundingClientRect();
+        filterItems.style.right = contentRect.left + "px";
+
+        if (!filtersButton.classList.contains('active')) {
+            filtersButton.classList.add('active');
+        }
+    });
+
+    const requestFilter = async () => {
+        const filterItems = filtersButton.querySelectorAll('.filter-item');
+        const filterItemsText = filterItems.map(item => item.textContent);
+        const stringFilterItems = filterItemsText.join('+');
+
+        const url = '';
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+        })
+    }
+
+    const filtersBackground = filtersButton.querySelector('.filter-background');
+    filtersBackground.addEventListener('click', e => {
+        e.preventDefault();
+
+
+
+        document.body.className = "";
+        filtersButton.classList.remove('active');
+    });
+
+    // Открытие подменю в фильтрах
+    const listButtonNames = filtersButton.querySelectorAll('.list-button-name');
+    listButtonNames.forEach(item => {
+        item.addEventListener('click', e => {
+            item.classList.toggle('active');
+            let filterItem = item.nextElementSibling;
+            if (filterItem.style.maxHeight) {
+                filterItem.style.maxHeight = null;
+            } else {
+                filterItem.style.maxHeight = filterItem.scrollHeight + "px";
+            }
+        });
+    });
+};
+
+window.addEventListener('load', () => {
     searchFormClickHandler();
+    filtersClickHandler();
     imageInitClickHandler();
     sliderHandler();
     musicSliderHandler();
-};
+});

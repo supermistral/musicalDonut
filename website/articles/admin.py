@@ -16,7 +16,12 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(Song)
 class SongAdmin(admin.ModelAdmin):
-    pass
+    ordering = ['name']
+
+
+@admin.register(SongSingerRelation)
+class SongSingerRelationAdmin(admin.ModelAdmin):
+    ordering = ['singer__name', 'song__name']
 
 
 @admin.register(Section)
@@ -26,10 +31,20 @@ class SectionAdmin(admin.ModelAdmin):
 
 @admin.register(TextBlock)
 class TextBlockAdmin(admin.ModelAdmin):
-    readonly_fields = ["image_preview"]
+    readonly_fields = ["slider_preview"]
 
-    def image_preview(self, obj):
-        return mark_safe(f"<img src='{obj.image.url}' style='max-height: 400px;'>")
+    def slider_preview(self, obj):
+        # images = obj.slider.images.all() if obj.slider else None
+        # if images is None or not images.exists():
+        #     return None
+        # images_html = "".join([f"<img src='{item.image.url}' style='max-height: 400px;display: block;'>" for item in images])
+        # return mark_safe(f"<div>{images_html}</div>")
+        slider = obj.slider
+        url = reverse(f'admin:{slider._meta.app_label}_{slider._meta.model_name}_change', args=[slider.pk])
+        if slider.pk:
+            return mark_safe(f"<a href='{url}'>изменить слайдер</a>")
+        else:
+            return ""
 
 
 class SubdivisionInline(admin.TabularInline):

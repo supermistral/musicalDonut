@@ -149,7 +149,21 @@ DATE_FORMAT = 'd E Y'
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'assets'),
+    ('node_modules', 'node_modules/'),
+]
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'sass_processor.finders.CssFinder',
+]
+
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -220,17 +234,30 @@ SIMPLE_JWT = {
 }
 
 
-# SASS Settings
+# SASS and Compressor Settings
 # В шаблонах использовать load sass_tags
 # и подключать link href={ sass_src 'pathToScss' }
 
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'sass_processor.finders.CssFinder',
+SASS_PROCESSOR_ROOT = STATIC_ROOT
+
+NODE_MODULES_URL = STATIC_URL + 'node_modules/'
+
+# Отключен автопрефикс
+NODE_NPX_PATH = None
+
+SASS_PROCESSOR_INCLUDE_DIRS = [
+    os.path.join(BASE_DIR, 'node_modules/'),
 ]
 
-SASS_PROCESSOR_ROOT = STATIC_ROOT
+# COMPRESS_ROOT = STATIC_ROOT
+
+# COMPRESS_PRECOMPILERS = [
+#     ('text/x-scss', 'django_libsass.SassCompiler'),
+# ]
+
+# COMPRESS_ENABLED = True
+
+# COMPRESS_POSTCSS_ARGS = '--config postcss.config.js'
 
 
 # Allauth settings

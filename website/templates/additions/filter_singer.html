@@ -1,0 +1,7 @@
+{% if song %}
+    {% for singer_name in song.singers_list %}
+        <div class="filter-item">
+            {{ singer_name }}
+        </div>
+    {% endfor %}
+{% endif %}

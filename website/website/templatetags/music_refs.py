@@ -8,8 +8,9 @@ register = template.Library()
 def music_refs(**kwargs):
     result = []
     for ref_key, ref_value in kwargs.items():
-        result.append({
-            "refkey": ref_key,
-            "refvalue": ref_value
-        })
+        if ref_value:
+            result.append({
+                "refkey": ref_key,
+                "refvalue": ref_value
+            })
     return result
