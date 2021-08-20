@@ -2,19 +2,47 @@
 
 {% block main_content %}
 <div class="content__first">
+    <div class="content-header">
+        <div class="content-header-text-top">
+            <div class="text">
+                <div class="text-left">
+                    <div class="word-1">Авторский</div>
+                    <div class="word-2">блог</div>
+                </div>
+                <div class="text-right">
+                    <div class="word-1">про</div>
+                    <div class="word-2">музыку</div>
+                </div>
+            </div>
+        </div>
+        <div class="content-header-background">
+            <img src="media/site/background.webp" alt="Фон шапки">
+        </div>
+        <div class="content-header-text-bottom">
+            <div class="text">
+                Субъективность зашкаливает
+            </div>
+        </div>
+    </div>
     <h2>Последняя публикация</h2>
     {% include 'articles/article_cards.html' with articles=last_article cover_section="1" card_classes="last-article" %}
     
     <div class="musical-playlist"></div>
 </div>
 <div class="content__second">
-    <div class="control-buttons">
-        <div class="button-sorting">
-            {% include 'additions/sorting.html' %}
+    <div class="content__above-articles">
+        <div class="content__articles-name">
+            <h2>Все статьи</h2>
         </div>
-        <div class="button-filters">
-            {% include 'additions/filters.html' with filter_singers=filter_singers %}
+        <div class="control-buttons">
+            <div class="button-sorting">
+                {% include 'additions/sorting.html' with sorting_key=sorting_key|default:"date_desc" sorting_value=sorting_value|default:"Дата по убыванию" %}
+            </div>
+            <div class="button-filters">
+                {% include 'additions/filters.html' with filter_singers=filter_singers %}
+            </div>
         </div>
+        <div class="selected-filters"></div>
     </div>
     <div class="content__articles">
         {% include 'articles/article_cards.html' with articles=articles cover_section="1" %}

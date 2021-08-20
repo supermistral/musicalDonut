@@ -130,7 +130,6 @@ class Song(models.Model):
 
     def singers_list(self):
         related_singers = SongSingerRelation.objects.filter(song=self)
-        print(related_singers)
         if related_singers.exists():
             return [obj.singer.name for obj in related_singers]
         return None
@@ -266,6 +265,20 @@ class Article(models.Model):
             objects = Article.objects.filter(section=self.section)
             self.number = len(objects)
         return super().save(*args, **kwargs)
+
+    def singers_list(self):
+        sd_list = Subdivision.objects.filter(article=self)
+        
+        singers = []
+        if self.song is not None and self.song.singers_list() is not None:
+            singers += self.song.singers_list()
+        
+        for sd in sd_list:
+            song = sd.song
+            if song is not None and song.singers_list() is not None:
+                singers += sd.song.singers_list()
+        
+        return singers
 
     class Meta:
         ordering = ['-date_release']

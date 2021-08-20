@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack --mode development",
-    "start": "webpack serve --open 'Firefox'",
+    "start": "webpack serve --mode development",
     "build": "webpack --mode production"
   },
   "author": "",
@@ -14,6 +14,7 @@
     "@babel/core": "^7.15.0",
     "@babel/preset-env": "^7.15.0",
     "autoprefixer": "^10.3.1",
+    "axios": "^0.21.1",
     "babel": "^6.23.0",
     "babel-loader": "^8.2.2",
     "npx": "^10.2.2",
@@ -27,5 +28,9 @@
     "last 20 versions",
     "> 1%",
     "not dead"
-  ]
+  ],
+  "dependencies": {
+    "core-js": "^3.16.2",
+    "regenerator-runtime": "^0.13.9"
+  }
 }

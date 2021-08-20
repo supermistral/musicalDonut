@@ -1,5 +1,21 @@
-<button class="button sorting">
-    <div class="sorting-cover">
-        <span>{% include 'additions/icons/sorting_icon.html' %}</span> сортировать
+{% load custom_filters %}
+
+<span>Сортировка: </span>
+<div class="button__container">
+    <button class="button sorting">
+        <div class="sorting-cover">
+            <span>{% include 'additions/icons/sorting_icon.html' %}</span>
+            <span class="text">{{ sorting_value }}</span>
+        </div>
+    </button>
+    <div class="sorting-items items__container anim-upwards">
+        <label class="sorting-item">
+            <input type='radio' name="sorting" value="date_desc" {% if sorting_key == "date_desc" %}checked{% endif %}/>
+            <div>Дата по убыванию</div>
+        </label>
+        <label class="sorting-item">
+            <input type='radio' name="sorting" value="date_asc" {% if sorting_key == "date_asc" %}checked{% endif %}/>
+            <div>Дата по возрастанию</div>
+        </label>
     </div>
-</button>
+</div>

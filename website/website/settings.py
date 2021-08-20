@@ -90,6 +90,7 @@ TEMPLATES = [
             ],
             'libraries': {
                 'music_refs': 'website.templatetags.music_refs',
+                'custom_filters': 'website.templatetags.custom_filters',
             }
         },
     },

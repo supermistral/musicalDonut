@@ -9,8 +9,9 @@ module.exports = {
     ],
     output: {
         path: path.resolve('./static/bundles/'),
-        filename: "main.bundle.js",
-        publicPath: '/static/bundles/',
+        filename: "[name].bundle.js",
+        publicPath: 'static/bundles/',
+        chunkFilename: 'static/bundles/[name].chunk.js'
     },
     module: {
         rules: [
@@ -35,9 +36,6 @@ module.exports = {
         },
     },
     optimization: {
-        minimize: true,
-        splitChunks: {
-            chunks: "all",
-        },
+        minimize: false,
     },
 };

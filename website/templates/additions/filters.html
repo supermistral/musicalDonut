@@ -3,17 +3,20 @@
         <span><i class="fas fa-filter"></i></span> Фильтр
     </div>
 </button>
-<div class="filter-items">
+<div class="filter-items items__container">
     <div class="filter-items__wrapper">
         <form action="" name="filters" method="GET">
             <div class="name">Фильтры</div>
             <div class="filter-control-buttons">
+                <button class="filter-clear">
+                    Очистить<span><i class="fas fa-times"></i></span>
+                </button>
                 <div class="list-button">
                     <div class="list-button-name">
                         <div>Исполнители</div>
                         <div class="list-button-name__icon"><i class="fas fa-caret-down"></i></div>
                     </div>
-                    <div class="singers">
+                    <div class="singers" data-filter="singers">
                         <!-- По согласованию -->
                         {% for singer_name in filter_singers %}
                             {% for name, count in singer_name.items %}
