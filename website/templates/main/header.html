@@ -1,4 +1,4 @@
-<header>
+<header {% if section_target %}class="with-sections"{% endif %}>
     <div class="header-content">
         <div class="header-info">
             <a class="header-name" href="/">Musical Donut</a>
@@ -15,16 +15,18 @@
             </div>
         </div>
     </div>
-    <div class="header-sections">
-        <div class="header-sections__content">
-            {% for section in sections %}
-            <a class="section  
-                {% if section_target and section_target == section.name %}active{% endif %}" 
-                href="{% url 'section_page' section.name_for_url %}"
-            >
-                <div class="section-name">{{ section.name }}</div>
-            </a>
-        {% endfor %}
+    {% if section_target %}
+        <div class="header-sections">
+            <div class="header-sections__content">
+                {% for section in sections %}
+                <a class="section  
+                    {% if section_target and section_target == section.name %}active{% endif %}" 
+                    href="{% url 'section_page' section.name_for_url %}"
+                >
+                    <div class="section-name">{{ section.name }}</div>
+                </a>
+            {% endfor %}
+            </div>
         </div>
-    </div>
+    {% endif %}
 </header>

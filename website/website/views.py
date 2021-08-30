@@ -12,26 +12,84 @@ SORTING_MESS = {
 }
 
 
-def get_filtered_articles(request, articles):
-    # Для фильтра исполнителей
+def filter_articles(request, articles, filter_key, callback, comparison_callback):
     result_articles = []
-    filter_singers_data = request.GET.get('singers', None)
+    filter_data = request.GET.get(filter_key, None)
 
-    if filter_singers_data:
-        filter_singers_list = filter_singers_data.split("+")
+    if filter_data:
+        filter_list = filter_data.split("+")
 
         for article in articles:
-            singers_list = article.singers_list()
-            if not singers_list:
+            items = callback(article)
+            if not items:
                 continue
 
-            for singer in singers_list:
-                if singer in filter_singers_list:
+            for item in items:
+                if comparison_callback(item) in filter_list:
                     result_articles.append(article)
                     break
     else:
         result_articles = articles
+
+    return result_articles
+
+
+def get_filtered_articles(request, articles):
+    # Для фильтра исполнителей
+    # result_articles = []
+    # filter_singers_data = request.GET.get('singers', None)
+
+    # if filter_singers_data:
+    #     filter_singers_list = filter_singers_data.split("+")
+
+    #     for article in articles:
+    #         singers_list = article.singers_list()
+    #         if not singers_list:
+    #             continue
+
+    #         for singer in singers_list:
+    #             if singer in filter_singers_list:
+    #                 result_articles.append(article)
+    #                 break
+    # else:
+    #     result_articles = articles
+
+    # singers_comparison_callback = lambda item: item
+    # result_articles = filter_articles(request, articles, 'singers', Article.singers, singers_comparison_callback)
+
+    # genres_comparison_callback = lambda item: item.name_eng
+    # result_articles = filter_articles(request, result_articles, 'genres', Article.genres, genres_comparison_callback)
+
+    result_articles = list(articles)
     
+    filter_by_singers = request.GET.get('singers', None)
+    if filter_by_singers:
+        filter_singers_list = filter_by_singers.split("+")
+        result_articles = list(filter(lambda item: item.contains_singers(filter_singers_list), result_articles))
+
+    filter_by_genres = request.GET.get('genres', None)
+    if filter_by_genres:
+        filter_genres_list = filter_by_genres.split("+")
+        result_articles = list(filter(lambda item: item.contains_genres(filter_genres_list), result_articles))
+    
+    # articles = result_articles 
+    # result_articles = []
+
+    # filter_genres_data = request.GET.get('genres', None)
+
+    # if filter_genres_data:
+    #     filter_genres_list = filter_genres_data.split('+')
+
+    #     for article in articles:
+    #         genres = article.genres()
+    #         if not genres.exists():
+    #             continue
+
+    #         for genre in genres:
+    #             if genre.name_eng in filter_genres_list:
+    #                 result
+    # else:
+    #     result_articles = articles
     return result_articles
 
 def get_sorted_articles(request, articles, context=None):
@@ -58,7 +116,8 @@ def main_page(request):
     last_article = Article.ready_objects.first()
     articles = Article.ready_objects.all()
     
-    filter_singers = []
+    filters = {}
+    # filter_singers = []
     result_articles = []
     sorting_context = {
         "sorting_key": "date_desc",
@@ -68,16 +127,7 @@ def main_page(request):
 
     if articles.exists():
         articles = articles.exclude(id=last_article.id)
-        # all_items = [article.subdivisions.all() for article in articles]
-        # all_items.append(articles)
-
-        filter_singers_names = []
-        for article in articles:
-            filter_singers_names += article.singers_list()
-
-        sorted_filter_singers_names = sorted(set(filter_singers_names))
-        filter_singers = [{name: filter_singers_names.count(name)} for name in sorted_filter_singers_names]
-
+        
         # Фильтр
         result_articles = []
         isFilter = request.GET.get('filter', None)
@@ -87,6 +137,7 @@ def main_page(request):
         else:
             result_articles = articles
 
+        # Сортировка
         result_articles = get_sorted_articles(request, result_articles, sorting_context)
 
         is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
@@ -99,17 +150,32 @@ def main_page(request):
             rendered_template = template.render().rendered_content
             return JsonResponse({'html': rendered_template}, safe=False)
 
-        # for queryset in all_items:
-        #     for queryset_item in queryset:
-        #         if queryset_item.song is not None:
-        #             songs.append(queryset_item.song)
+        # Singers filter list (ok)
+        filter_singers_names = []
+        for article in articles:
+            filter_singers_names += article.singers_list()
 
-        # all_filter_singers_names = [song.singers_list() for song in songs]
-        # filter_singers_names = []
+        sorted_filter_singers_names = sorted(set(filter_singers_names))
+        # filter_singers = [{name: filter_singers_names.count(name)} for name in sorted_filter_singers_names]
+        filter_singers = [{
+            "name": name,
+            "value": name,
+            "count": filter_singers_names.count(name)
+        } for name in sorted_filter_singers_names]
+        filters["singers"] = filter_singers
 
-        # for singer_list in all_filter_singers_names:
-        #     if singer_list is not None:
-        #         filter_singers_names += singer_list
+        # Genres filter list (ok)
+        filter_genres_names = []
+        for article in articles:
+            filter_genres_names += article.genres()
+
+        sorted_filter_genres_names = sorted(set(filter_genres_names), key=lambda genre: genre.name)
+        filter_genres = [{
+                "name": genre.name, 
+                "value": genre.name_eng, 
+                "count": filter_genres_names.count(genre)
+            } for genre in sorted_filter_genres_names]
+        filters["genres"] = filter_genres
 
     return render(
         request, 
@@ -117,7 +183,7 @@ def main_page(request):
         context={
             'articles': result_articles,
             'last_article': [last_article],     # must be list
-            'filter_singers': filter_singers,
+            'filters': filters,
             'empty_message': empty_message,
             **sorting_context
         }

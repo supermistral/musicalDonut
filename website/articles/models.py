@@ -49,7 +49,8 @@ class Singer(models.Model):
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=30, unique=True)
+    name_eng = models.CharField(max_length=30, unique=True)
 
     def __str__(self):
         return self.name
@@ -61,7 +62,6 @@ class Genre(models.Model):
 
 
 class Song(models.Model):
-    # singer = models.ForeignKey(Singer, on_delete=models.CASCADE, related_name='songs')
     name = models.CharField(max_length=100)
     date_release = models.DateField(null=True, blank=True)
     genre = models.ForeignKey(
@@ -71,6 +71,22 @@ class Song(models.Model):
         null=True, 
         related_name='songs'
     )
+    # genre_choices = (
+    #     (None, 'без жанра'),
+    #     ('pop', 'Поп'),
+    #     ('rock', 'Рок'),
+    #     ('indie', 'Инди'),
+    #     ('metal', 'Метал'),
+    #     ('alternative', 'Альтернатива'),
+    #     ('electronics', 'Электроника'),
+    #     ('dance', 'Танцевальная'),
+    #     ('rap', 'Рэп'),
+    #     ('jazz', 'Джаз'),
+    #     ('blues', 'Блюз'),
+    #     ('reggae', 'Регги'),
+    #     ('punk', 'Панк')
+    # )
+    # genre = models.CharField(max_length=30, choices=genre_choices, default=None, blank=True, null=True)
     is_album = models.BooleanField(default=False)
 
     ref_vk = models.CharField(max_length=500, blank=True, null=True)
@@ -200,15 +216,25 @@ class TextBlock(models.Model):
     objects = TextBlockManager()
 
     def __str__(self):
-        temp_name = self.subdivision.name[:30] + ".." if self.subdivision.name and len(self.subdivision.name) > 30\
-            else self.subdivision.name
+        temp_name = ""
+        if self.subdivision:
+            temp_name = self.subdivision.article.__str__() + " -> "
+            if self.subdivision.name:
+                if len(self.subdivision.name) > 30:
+                    temp_name += self.subdivision.name[:30] + ".."
+                else:
+                    temp_name += self.subdivision.name
+            else:
+                temp_name += self.subdivision.song.full_name()
+
         temp_text = ""
         if self.text:
             if len(self.text) > 30:
-                temp_text = self.text[:30] + ".."
+                temp_text = " | " + self.text[:30] + ".."
             else:
-                temp_text = self.text
-        return f"{temp_name} -> {temp_text}"
+                temp_text = " | " + self.text
+
+        return f"{temp_name}{temp_text}"
 
     def save(self, *args, **kwargs):
         self.text = self.text\
@@ -218,7 +244,6 @@ class TextBlock(models.Model):
         return super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ['subdivision__name']
         verbose_name = "Текстовый блок"
         verbose_name_plural = "Текстовые блоки"
 
@@ -263,7 +288,7 @@ class Article(models.Model):
     def save(self, *args, **kwargs):
         if self.number is None:
             objects = Article.objects.filter(section=self.section)
-            self.number = len(objects)
+            self.number = len(objects) + 1
         return super().save(*args, **kwargs)
 
     def singers_list(self):
@@ -279,6 +304,27 @@ class Article(models.Model):
                 singers += sd.song.singers_list()
         
         return singers
+
+    def genres(self):
+        sd_list = Subdivision.objects.filter(article=self)
+        song_list = Song.objects.filter(Q(articles__in=[self]) | Q(subdivisions__in=sd_list))
+        
+        genres = Genre.objects.filter(songs__in=song_list)
+        return genres
+
+    def contains_singers(self, search_params):
+        singers_list = self.singers_list()
+        if not singers_list:
+            return False
+
+        return any([item in search_params for item in singers_list])
+
+    def contains_genres(self, search_params):
+        genres_list = self.genres()
+        if not genres_list.exists():
+            return False
+
+        return any([item.name_eng in search_params for item in genres_list])
 
     class Meta:
         ordering = ['-date_release']
@@ -301,11 +347,17 @@ class Subdivision(models.Model):
         null=True
     )
 
+    @property
+    def format_name(self):
+        if self.name and len(self.name) > 30:
+            return self.name[:30] + ".." 
+        return self.name or self.song and self.song.full_name()
+
     def __str__(self):
-        temp_name = self.name[:30] + ".." if self.name and len(self.name) > 30 else self.name
+        temp_name = self.format_name
         if not temp_name and self.song:
             temp_name = self.song.full_name()
-        return f"{self.article.name} -> {temp_name}"
+        return f"{self.article} -> {temp_name}"
 
     class Meta:
         ordering = ['article__name']
@@ -319,25 +371,34 @@ class ImageSlider(models.Model):
     def get_relation(self, str_relation, class_name):
         try:
             obj = class_name.objects.get(slider=self)
+            temp_name = ""
             if str_relation:
                 str_relation += " | "
             if class_name == TextBlock:
-                str_relation += obj.subdivision.name
+                temp_name = obj.subdivision.format_name
             else:
-                str_relation += obj.name
+                temp_name = obj.name
+            temp_name = temp_name[:40] + ".." if len(temp_name) > 40 else temp_name
+            str_relation += temp_name
         except:
             pass
         return str_relation
 
-    def __str__(self):
+    @property
+    def bindings(self):
         obj_relation = ""
         for class_name in [Article, TextBlock]:
             obj_relation = self.get_relation(obj_relation, class_name)
         if not obj_relation:
             obj_relation = "(без привязки)"
-        else:
+
+        return obj_relation
+
+    def __str__(self):
+        obj_relation = self.bindings
+        if obj_relation:
             obj_relation = "| " + obj_relation
-        # Дописать для текстблоков
+            
         return f"{self.name} {obj_relation}"
 
     class Meta:
@@ -352,12 +413,27 @@ class ImageUnit(models.Model):
         on_delete=models.CASCADE, 
         related_name='images'
     )
-    image = models.ImageField(upload_to="sliders")
+    image = models.ImageField(upload_to="sliders", blank=True, null=True)
+    video = models.TextField(blank=True, null=True)
+    
+    def save(self, *args, **kwargs):
+        if self.video is not None:
+            self.video = self.video.strip()
+            if "</iframe>" not in self.video:
+                regex = re.search(r'(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^\"&?\/\s]{11})', self.video)
+                if regex is not None:
+                    video_code = regex.group(1)
+                    widget = f"<iframe width='800' height='450' src='https://youtube.com/embed/{video_code}' title='Youtube video player' frameborder='0'" +\
+                        " allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>"
+                    self.video = widget
+
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         first_image = ImageUnit.objects.filter(slider=self.slider).first()
         id_diff = self.id - first_image.id + 1
-        return f"{self.slider.name} | {id_diff}"
+        is_video = " (видео)" if self.video else ""
+        return f"{self.slider.name} | {id_diff}{is_video}"
 
     class Meta:
         ordering = ['slider__name']

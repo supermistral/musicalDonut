@@ -18,6 +18,7 @@
         <img src="{{ article.image.url }}" alt="Обложка статьи">
     </div>
     -->
+    {% include 'articles/slider.html' with slider=article.slider class="center" %}
     {% for subdivision in article.subdivisions.all %}
         <div class="subdivision">
             {% if subdivision.song %}
@@ -36,76 +37,21 @@
             {% for tb in subdivision.textblocks.all %}
                 <div class="subdivision__item">
                     {% if tb.text_class == "center" %}
-                        {% if tb.slider and tb.slider.images.exists %}
-                            <div class="center">
-                                {% if tb.slider.images.all|length > 1 %}
-                                    <div class="img-cover slider">
-                                        <div class="info">
-                                            <span>1</span> из {{ tb.slider.images.all|length }}
-                                        </div>
-                                        <a class="prev"></a>
-                                        <a class="next"></a>
-                                        <div class="slider-cover">
-                                            {% for image in tb.slider.images.all %}
-                                                <img 
-                                                    {% if forloop.first %}
-                                                        class="active"
-                                                    {% endif %} 
-                                                    src="{{ image.image.url }}" 
-                                                    alt="{{ tb.slider.name }} - {{ forloop.counter }}"
-                                                >
-                                            {% endfor %}
-                                        </div>
-                                        <div class="caption">{{ tb.slider.name }}</div>
-                                    </div>
-                                {% else %}
-                                    <div class="img-cover">
-                                        <img src="{{ tb.slider.images.0.image.url }}" alt="{{ tb.slider.name }}">
-                                        <div class="caption">{{ tb.slider.name }}</div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endif %}
+                        {% include 'articles/slider.html' with slider=tb.slider class="center" %}
                         <p>
                             {% autoescape off %}
                                 {{ tb.text|linebreaksbr }}
                             {% endautoescape %}
                         </p>
                     {% elif tb.text_class == "right" %}
-                        {% if tb.slider and tb.slider.images.exists %}
-                            <div class="center">
-                                <div class="img-cover">
-                                    {% if tb.slider.images.all|length == 1 %}
-                                        <img src="{{ tb.slider.images.0.image.url }}" alt="{{ tb.slider.name }}">
-                                    {% else %}
-                                        {% for image in tb.slider.images.all %}
-                                            <img src="{{ image.image.url }}" alt="{{ tb.slider.name }} - {{ forloop.counter }}">
-                                        {% endfor %}
-                                    {% endif %}
-                                    <div class="caption">{{ tb.slider.name }}</div>
-                                </div>
-                            </div>
-                        {% endif %}
+                        {% include 'articles/slider.html' with slider=tb.slider class="right" %}
                         <p>
                             {% autoescape off %}
                                 {{ tb.text|linebreaksbr }}
                             {% endautoescape %}
                         </p>
                     {% else %}
-                        {% if tb.slider and tb.slider.images.exists %}
-                            <div class="center">
-                                <div class="img-cover">
-                                    {% if tb.slider.images.all|length == 1 %}
-                                        <img src="{{ tb.slider.images.0.image.url }}" alt="{{ tb.slider.name }}">
-                                    {% else %}
-                                        {% for image in tb.slider.images.all %}
-                                            <img src="{{ image.image.url }}" alt="{{ tb.slider.name }} - {{ forloop.counter }}">
-                                        {% endfor %}
-                                    {% endif %}
-                                    <div class="caption">{{ tb.slider.name }}</div>
-                                </div>
-                            </div>
-                        {% endif %}
+                        {% include 'articles/slider.html' with slider=tb.slider class="left" %}
                         <p>
                             {% autoescape off %}
                                 {{ tb.text|linebreaksbr }}
@@ -117,19 +63,24 @@
             {% if subdivision.song %}
                 {% music_refs vk=subdivision.song.ref_vk yandex=subdivision.song.ref_yandex spotify=subdivision.song.ref_spotify apple=subdivision.song.ref_apple subdivision=article.song.ref_youtube deezer=subdivision.song.ref_deezer as refs %}
                     {% if refs %}
-                    <div class="song__refs">
-                        <div class="song__container">                  
-                            {% for ref in refs %}
-                                {% if ref.refvalue %}
-                                    <div class="song" data-service="{{ ref.refkey }}">
-                                        {% autoescape off %}{{ ref.refvalue }}{% endautoescape %}
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
+                    <div class="song__control">
+                        <div class="song__control-buttons">
+                            <a class="open-refs"><span class="text">Показать виджеты</span> <span class="icon"><i class="fas fa-sliders-h"></i></span></a>
                         </div>
-                        <div class="song__info">
-                            <div class="settings">
-                                <i class="fas fa-angle-double-right"></i>
+                        <div class="song__refs">
+                            <div class="song__container">                  
+                                {% for ref in refs %}
+                                    {% if ref.refvalue %}
+                                        <div class="song" data-service="{{ ref.refkey }}">
+                                            {% autoescape off %}{{ ref.refvalue }}{% endautoescape %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="song__info">
+                                <div class="settings">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </div>
                             </div>
                         </div>
                     </div>

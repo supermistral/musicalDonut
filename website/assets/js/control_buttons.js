@@ -1,7 +1,5 @@
-// import { setSelectedFilterItems, filtersHandler } from "./filters";
 import { filtersStart } from "./filters";
 import { sortingStart } from "./sorting";
-// import { setSelectedSortingItems, sortingHandler } from "./sorting";
 
 
 let wasEmptyFiltered = true;
@@ -11,17 +9,11 @@ let sortingKey = null;
 
 export const updateSortingKey = (value) => {
     sortingKey = value;
-}
+};
 
 
-const promisefilterRequest = async (needHistory = true) => {
-    const selectedInputs = document.querySelectorAll('.button-filters .filter-item input:checked');
+const getSelectedStringData = (selectedInputs) => {
     let selectedData = {};
-
-    let needFilterKey = {};
-    if (selectedInputs.length !== 0) {
-        needFilterKey["filter"] = true;
-    }
 
     selectedInputs.forEach(item => {
         const parent = item.parentNode.parentNode;
@@ -41,6 +33,27 @@ const promisefilterRequest = async (needHistory = true) => {
         selectedStringData[key] = selectedData[key].join('+');
     }
 
+    return selectedStringData;
+};
+
+
+const getSelectedStringValues = () => {
+    const selectedInputs = document.querySelectorAll('.button-filters .filter-item input:checked');
+    const selectedStringData = getSelectedStringData(selectedInputs);
+
+    return Object.values(selectedStringData).join('');
+};
+
+
+const promisefilterRequest = async (needHistory = true) => {
+    const selectedInputs = document.querySelectorAll('.button-filters .filter-item input:checked');
+
+    let needFilterKey = {};
+    if (selectedInputs.length !== 0) {
+        needFilterKey["filter"] = true;
+    }
+
+    const selectedStringData = getSelectedStringData(selectedInputs);
     const stringValues = Object.values(selectedStringData).join('');
 
     if (stringValues === prevStringValues && wasEmptyFiltered) {          // пустой выбор подряд
@@ -50,7 +63,7 @@ const promisefilterRequest = async (needHistory = true) => {
     } else {                                                // не пустой выбор
         wasEmptyFiltered = false;
     }
-
+    
     const url = '?' + new URLSearchParams({
         ...needFilterKey,
         ...selectedStringData
@@ -69,11 +82,13 @@ const promisefilterRequest = async (needHistory = true) => {
         .then(data => {
             return data.html;
         });
-}
+};
 
 
 export const controlButtonsHandler = () => {
     const articlesContainer = document.querySelector('.content__articles');
+    prevStringValues = getSelectedStringValues();
+    console.log(prevStringValues);
 
     const filterRequest = (needHistory = true) => {
         promisefilterRequest(needHistory)
@@ -87,8 +102,6 @@ export const controlButtonsHandler = () => {
                 articlesContainer.innerHTML = e.message;
             });
     }
-    // const filterFlag = filtersHandler();
-    // const sortingFlag = sortingHandler();
     const filters = new filtersStart(filterRequest);
     const sorting = new sortingStart(filterRequest);
 
@@ -110,4 +123,4 @@ export const controlButtonsHandler = () => {
     });
 
     setSelectedItems();
-}
+};

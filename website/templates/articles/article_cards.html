@@ -10,16 +10,16 @@
                         {{ article.section.name }}
                     </a>
                 {% endif %}
-                <div class="name{% if article.name|length > 130 %} short-name{% endif %}">
-                    <a href="{% url 'article' article.id %}">
+                <a class="name{% if article.name|length > 130 %} short-name{% endif %}" href="{% url 'article' article.id %}">
+                    <div>
                         {% if article.name|length > 130 %}
                             <span>{{ article.name|slice:":130" }}...</span>
                             <span class="full-name">{{ article.name }}</span>
                         {% else %}
                             <span class="true-name">{{ article.name }}</span>
                         {% endif %}
-                    </a>
-                </div>
+                    </div>
+                </a>
             </div>
             <div class="article-info">
                 <div class="info">

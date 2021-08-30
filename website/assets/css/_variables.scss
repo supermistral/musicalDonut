@@ -1,14 +1,41 @@
-$headerHeigth: 5em;
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa&display=swap');
+
+$fontFamily: 'Comfortaa', Arial, Helvetica, sans-serif;
+
+$headerHeigth: 6rem;
+
+$headerSectionsHeight: 4rem;
 
 $contentWidth: 1200px;
 
+$articleContentWidth: 1000px;
+
 $articleImgWidth: 800px;
 
-$boxShadowArticleCover: 1px 0px 0px rgb(211, 208, 43), 0px 1px 0px rgb(179, 176, 38),
-    2px 1px 0px rgb(211, 208, 43), 1px 2px 0px rgb(179, 176, 38),
-    3px 2px 0px rgb(211, 208, 43), 2px 3px 0px rgb(179, 176, 38),
-    4px 3px 0px rgb(211, 208, 43), 3px 4px 0px rgb(179, 176, 38),
-    5px 4px 0px rgb(211, 208, 43), 4px 5px 0px rgb(179, 176, 38);
+
+// MEDIA WIDTH
+
+$tabletWidth: 1200px;
+$phoneWidth: 800px;
 
 
 // Colors
+
+$colorWhite: #fff;
+$colorBrightGray: #eee;
+$colorGray: #666;
+$colorLightGray: #aaa;
+$colorPurple: #be156e;
+$colorPurpleHover: #971058;
+$colorLightBeige: #f4e7e1;
+$colorYellow: rgb(211, 208, 43);
+$colorDarkYellow: rgb(179, 176, 38);
+$colorVioletDefault: violet;
+$colorYellowDefault: yellow;
+
+
+$boxShadowArticleCover: 1px 0px 0px $colorYellow, 0px 1px 0px $colorDarkYellow,
+    2px 1px 0px $colorYellow, 1px 2px 0px $colorDarkYellow,
+    3px 2px 0px $colorYellow, 2px 3px 0px $colorDarkYellow,
+    4px 3px 0px $colorYellow, 3px 4px 0px $colorDarkYellow,
+    5px 4px 0px $colorYellow, 4px 5px 0px $colorDarkYellow;

@@ -21,14 +21,14 @@ export function filtersStart(filterRequest) {
 
     let selectedItemsData = {
         selectedArray: [],
-        addNode: function(value, filterKey) {
+        addNode(text, value, filterKey) {
             const div = document.createElement('div');
             const spanInDiv = document.createElement('span');
 
             div.className = 'selected-filter-item';
             div.dataset.value = value;
             div.dataset.filter = filterKey;
-            div.textContent = value;
+            div.textContent = text;
             spanInDiv.innerHTML = crossForSelectedTemplate;
 
             div.append(spanInDiv);
@@ -48,13 +48,13 @@ export function filtersStart(filterRequest) {
             this.selectedArray.push(div);
             selectedFiltersContainer.append(div);
         },
-        removeNode: function(value) {
+        removeNode(value) {
             const div = this.selectedArray.find(item => item.dataset.value === value);
             if (!div) return;
             this.selectedArray = this.selectedArray.filter(item => item !== div);
             div.remove();
         },
-        clear: function() {
+        clear() {
             this.selectedArray.forEach(div => {
                 div.remove();
             });
@@ -104,7 +104,7 @@ export function filtersStart(filterRequest) {
     filterInputs.forEach(item => {
         item.addEventListener('change', e => {
             if (e.target.checked) {
-                selectedItemsData.addNode(e.target.value, e.target.name);
+                selectedItemsData.addNode(e.target.dataset.textvalue, e.target.value, e.target.name);
             } else {
                 selectedItemsData.removeNode(e.target.value);
             }
@@ -125,15 +125,11 @@ export function filtersStart(filterRequest) {
 
 
     this.setSelectedFilterItems = (searchParams) => {
-        filterInputs.forEach(item => {
-            item.checked = false;
-        });
-
-        selectedItemsData.clear();
+        filterClearButton.dispatchEvent(new Event('click'));
 
         if (searchParams.has('filter') && searchParams.get('filter') === 'true') { 
             const inputsArray = Array.from(filterInputs);
-            const filterItemsContainers = filtersButton.querySelectorAll('div[data-filter]');
+            const filterItemsContainers = filtersButton.querySelectorAll('.filter-items div[data-filter]');
 
             filterItemsContainers.forEach(itemContainer => {
                 const filterKey = itemContainer.dataset.filter;
@@ -145,7 +141,7 @@ export function filtersStart(filterRequest) {
                         const input = inputsArray.find(el => el.value === val);
                         if (input) {
                             input.checked = true;
-                            selectedItemsData.addNode(val, input.name);
+                            selectedItemsData.addNode(input.dataset.textvalue, val, input.name);
                         }
                     });
                 }

@@ -1,0 +1,41 @@
+{% if slider and slider.images.exists %}
+    <div class='{{ class|default:"center" }}'>
+        {% if slider.images.all|length > 1 %}
+            <div class="img-cover slider">
+                <div class="info">
+                    <span>1</span> из {{ slider.images.all|length }}
+                </div>
+                <a class="prev"></a>
+                <a class="next"></a>
+                <div class="slider-cover">
+                    {% for image in slider.images.all %}
+                        {% if image.image %}
+                        <div class="item-img{% if forloop.first %} active{% endif %}">
+                            <img 
+                                src="{{ image.image.url }}" 
+                                alt="{{ slider.name }} - {{ forloop.counter }}"
+                            />
+                        </div>
+                        {% elif image.video %}
+                        <div class="item-video">
+                            {% autoescape off %}{{ image.video }}{% endautoescape %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="caption">{{ slider.name }}</div>
+            </div>
+        {% elif slider.images.all.0.image or slider.images.all.0.video %}
+            <div class="img-cover">
+                {% if slider.images.all.0.image %}
+                <img src="{{ slider.images.all.0.image.url }}" alt="{{ slider.name }}">
+                {% else %}
+                <div class="item-video">
+                    {% autoescape off %}{{ slider.images.all.0.video }}{% endautoescape %}
+                </div>
+                {% endif %}
+                <div class="caption">{{ slider.name }}</div>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}

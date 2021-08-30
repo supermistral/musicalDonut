@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import *
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.db import models
+from django.forms import Textarea
 
 
 @admin.register(Singer)
@@ -32,6 +34,7 @@ class SectionAdmin(admin.ModelAdmin):
 @admin.register(TextBlock)
 class TextBlockAdmin(admin.ModelAdmin):
     readonly_fields = ["slider_preview"]
+    list_display = ['subdivision', 'format_text']
 
     def slider_preview(self, obj):
         # images = obj.slider.images.all() if obj.slider else None
@@ -45,6 +48,11 @@ class TextBlockAdmin(admin.ModelAdmin):
             return mark_safe(f"<a href='{url}'>изменить слайдер</a>")
         else:
             return ""
+
+    def format_text(self, obj):
+        if obj.text and len(obj.text) > 30:
+            return obj.text[:30] + ".."
+        return obj.text or " - "
 
 
 class SubdivisionInline(admin.TabularInline):
@@ -73,12 +81,18 @@ class ArticleAdmin(admin.ModelAdmin):
 @admin.register(Subdivision)
 class SubdivisionAdmin(admin.ModelAdmin):
     inlines = [TextBlockInline]
+    list_display = ['article', 'name', 'song']
 
 
 class ImageUnitInline(admin.TabularInline):
     model = ImageUnit
     extra = 1
     readonly_fields = ["image_preview"]
+    formfield_overrides = {
+        models.TextField: {
+            'widget': Textarea(attrs={'rows': 10, 'cols': 30}),
+        }
+    }
     
     def image_preview(self, obj):
         return mark_safe(f"<img src='{obj.image.url}' style='max-height: 200px;'>")
@@ -87,6 +101,7 @@ class ImageUnitInline(admin.TabularInline):
 @admin.register(ImageSlider)
 class ImageSliderAdmin(admin.ModelAdmin):
     inlines = [ImageUnitInline]
+    list_display = ['name', 'bindings']
 
 
 @admin.register(ImageUnit)
