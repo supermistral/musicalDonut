@@ -3,7 +3,7 @@
 {% block main_content %}
 <div class="content__first">
     <div class="content-header">
-        <div class="content-header-text-top">
+        <!-- <div class="content-header-text-top">
             <div class="text">
                 <div class="text-left">
                     <div class="word-1">Авторский</div>
@@ -14,41 +14,60 @@
                     <div class="word-2">музыку</div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="content-header-background">
-            <img src="media/site/background.webp" alt="Фон шапки">
+            <picture>
+                <source media="(min-width: 768px)" srcset="media/site/background.webp">
+                <img alt="">
+            </picture>
+            <!-- <img src="media/site/background.webp" alt="Фон шапки"> -->
         </div>
-        <div class="content-header-text-bottom">
-            <div class="content-header-text-bottom__container">
-                <div class="search-button">
-                    <a class="search-button-link">
-                        <i class="fas fa-search"></i>
-                    </a>
-                </div>
-                <div class="header-sections">
-                    <div class="header-sections__content">
-                        {% for section in sections %}
-                        <a class="section  
-                            {% if section_target and section_target == section.name %}active{% endif %}" 
-                            href="{% url 'section_page' section.name_for_url %}"
-                        >
-                            <div class="section-name">{{ section.name }}</div>
+        <div class="content-header-container">
+            <div class="content-header-text-bottom">
+                <div class="content-header-text-bottom__container">
+                    <div class="search-button">
+                        <a class="search-button-link">
+                            <i class="fas fa-search"></i>
                         </a>
-                    {% endfor %}
+                    </div>
+                    <div class="header-sections">
+                        <div class="header-sections__content">
+                            {% for section in sections %}
+                            <a class="section 
+                                {% if section_target and section_target == section.name %}active{% endif %}" 
+                                href="{% url 'section_page' section.name_for_url %}"
+                            >
+                                <div class="section-name">{{ section.name }}</div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="content-header-text-bottom__container-mobile">
+                    <div class="header-sections__mobile">
+                        <div class="header-sections__content">
+                            {% for section in sections %}
+                            <a class="section stylized-button 
+                                {% if section_target and section_target == section.name %}active{% endif %}" 
+                                href="{% url 'section_page' section.name_for_url %}"
+                            >
+                                <div class="section-name">{{ section.name }}</div>
+                            </a>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
+            {% include 'articles/article_cards.html' with articles=last_article cover_section="1" card_classes="last-article" %}
+            <div class="musical-playlist"></div>
         </div>
     </div>
-    <h2>Последняя публикация</h2>
-    {% include 'articles/article_cards.html' with articles=last_article cover_section="1" card_classes="last-article" %}
-    
-    <div class="musical-playlist"></div>
+    <!-- <h2>Последняя публикация</h2> -->
 </div>
 <div class="content__second">
     <div class="content__above-articles">
         <div class="content__articles-name">
-            <h2>Все статьи</h2>
+            <!-- <h2>Все статьи</h2> -->
         </div>
         <div class="control-buttons">
             <div class="button-sorting">

@@ -1,4 +1,6 @@
 import { controlButtonsHandler } from "./control_buttons";
+import { CSS_CLASSES } from "./constants";
+import { popupClickHandler } from "./utils/popup";
 
 
 const imageInitClickHandler = () => {
@@ -8,27 +10,22 @@ const imageInitClickHandler = () => {
     }
 
     const wrapperContent = document.getElementById("content");
-    
+    const fullscreenClass = CSS_CLASSES.popup.fullscreen;
+    const targetNoClickClass = CSS_CLASSES.popup.targetNoClick;
+
     imagesWrappers.forEach(item => {
         item.addEventListener('click', (e) => {
-            document.body.className = "hidden";
 
             const imageSrc = e.target.src;
             const imageAlt = e.target.alt;
 
             let fullsizeWrapper = document.createElement('div');    
-            fullsizeWrapper.className = "img-fullsize__wrapper";
+            fullsizeWrapper.className = "img-fullsize__wrapper " + fullscreenClass;
             fullsizeWrapper.innerHTML = "<div class='img-fullsize__inner'>" +
-                "<img src='" + imageSrc + "' alt='" + imageAlt + "'>" + 
+                "<img class='" + targetNoClickClass + "' src='" + imageSrc + "' alt='" + imageAlt + "'>" + 
                 "<div class='cross'></div></div></div>";
 
-            fullsizeWrapper.addEventListener('click', (e) => {
-                const imgContainer = fullsizeWrapper.querySelector("img");
-                if (e.target !== imgContainer) {
-                    document.body.className = "";
-                    fullsizeWrapper.remove();
-                }
-            });
+            popupClickHandler(fullsizeWrapper);
 
             wrapperContent.append(fullsizeWrapper);
         });
@@ -259,9 +256,9 @@ const musicSliderHandler = () => {
         // кнопка показа виджетов
         const buttonSongRefs = songItem.querySelector('.open-refs');
 
-        buttonSongRefs.forEach(button => {
-
-        })
+        buttonSongRefs.addEventListener('click', e => {
+            songItem.classList.toggle('hidden');
+        });
 
         const showMusicSlider = () => {
             const mouseEnterHandler = event => {
@@ -321,29 +318,46 @@ const musicSliderHandler = () => {
 };
 
 const searchFormClickHandler = () => {
-    const searchForm = document.querySelector('.search-form form');
-    if (searchForm) {
-        const input = searchForm.querySelector('input');
-        searchForm.querySelector('span').addEventListener('click', e => {
-            input.focus();
-        });
+    const searchButtons = document.querySelectorAll('.search-button');
 
-        const button = searchForm.querySelector('button');
-        const isEmptyInput = el => {
-            const value = el.value.trim().length;
-            button.disabled = value === 0;
-        };
+    if (searchButtons.length === 0) return;
+
+    const wrapperContent = document.getElementById("content");
+    const targetNoClickClass = CSS_CLASSES.popup.targetNoClick;
+
+    const searchButtonClickHandler = () => {
+        const div = document.createElement('div');
+        const searchFormString = "<div class='search-form__inner " + targetNoClickClass +
+            "'><div class='search-form-top'><div class='text'>Найти</div></div><form class='search-form'>" +
+            "<input type='text' placeholder='найти...' name='search'>" +
+            "<button type='submit'><i class='fas fa-arrow-circle-right'></i></button></form>" +
+            "<div class='search-form-bottom'>заголовок, исполнитель, песня</div></div>";
+
+        div.className = "search-form__wrapper " + CSS_CLASSES.popup.fullscreen;
+        div.innerHTML = searchFormString;
+
+        popupClickHandler(div);
+
+        const input = div.querySelector('input');
+        const button = div.querySelector('button');
+        const isEmptyInput = el => el.value.trim().length === 0;
 
         input.addEventListener('keyup', e => {
-            isEmptyInput(e.target);
+            button.disabled = isEmptyInput(e.target);
         });
 
         input.addEventListener('blur', e => {
             button.disabled = true;
         });
 
-        isEmptyInput(input);
+        button.disabled = isEmptyInput(input);
+        wrapperContent.append(div);
+        input.focus();
     }
+    
+    searchButtons.forEach(item => {
+        item.addEventListener('click', searchButtonClickHandler);
+    });
 };
 
 const scrollHandler = () => {
@@ -351,13 +365,13 @@ const scrollHandler = () => {
 
     if (!headerSections) return;
 
-    const contentBottomContainer = document.querySelector('.content-header-text-bottom__container');
-    const header = document.querySelector('header');
-
-    let lastScroll = window.pageYOffset;
-    const delta = headerSections.offsetHeight;
-    const classHide = "hidden";
-    const classBlock = "blocked";
+    let     lastScroll              = window.pageYOffset;
+    const   contentBottomContainer  = document.querySelector('.content-header-text-bottom__container'),
+            header                  = document.querySelector('header'),
+            delta                   = headerSections.offsetHeight,
+            classHide               = "hidden",
+            classBlock              = "blocked",
+            classHeaderBlock        = "blocked";
 
     const scrollHandlerOnSectionPage = () => {
         const currentScroll = window.pageYOffset;
@@ -382,6 +396,7 @@ const scrollHandler = () => {
         if (contentBottomContainerTop <= 0) {
             if (!headerSections.classList.contains(classBlock)) {
                 headerSections.classList.add(classBlock, classHide);
+                header.classList.add(classHeaderBlock);
             } else if (currentScroll > lastScroll && lastScroll > 0) {
                 if (!headerSections.classList.contains(classHide)) {
                     headerSections.classList.add(classHide);
@@ -391,6 +406,7 @@ const scrollHandler = () => {
             }
         } else {
             headerSections.classList.remove(classBlock);
+            header.classList.remove(classHeaderBlock);
         }
 
         lastScroll = currentScroll;
@@ -403,6 +419,26 @@ const scrollHandler = () => {
             scrollHandlerOnSectionPage
     );
 };
+
+const mailingClickHandler = () => {
+    const mailingButton = document.querySelector('mailing-button');
+    if (!mailingButton) return;
+
+    mailingButton.addEventListener('click', e => {
+        const   wrapperContent      = document.getElementById("content"),
+                targetNoClickClass  = CSS_CLASSES.popup.targetNoClick,
+                div                 = document.createElement('div');
+        
+        const newsletterFormString = "<div class='newsletter-form__inner " + targetNoClickClass +
+            "'></div>";
+
+        div.className = 'newsletter-form__wrapper ' + CSS_CLASSES.popup.fullscreen;
+    });
+
+    const mailingRequest = () => {
+        
+    }
+}
 
 window.addEventListener('DOMContentLoaded', () => {
     scrollHandler();

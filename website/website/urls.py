@@ -20,11 +20,14 @@ from django.conf import settings
 from . import views
 
 
+app_name = 'website'
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # path('auth/', include('accounts.urls')),
-    path('articles/', include('articles.urls')),
+    path('articles/', include('articles.urls', namespace="articles")),
     
     path('', views.main_page, name="home"),
     # path('', views.ArticleList.as_view(), name="main_page"),
@@ -32,6 +35,7 @@ urlpatterns = [
     path('search/', views.SearchArticlesList.as_view(), name="search_articles"),
     path('articles/<int:pk>/', views.ArticleDetail.as_view(), name="article"),
     path('accounts/', include('accounts.urls')),
+    path('newsletter/', include('newsletter.urls', namespace='newsletter')),
 ]
 
 if settings.DEBUG:

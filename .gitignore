@@ -15,7 +15,11 @@ migrations
 
 media/
 staticfiles/
+static/
 
 node_modules/
 package-lock.json
 **/assets/bundles/**
+
+docker-compose.*
+Dockerfile

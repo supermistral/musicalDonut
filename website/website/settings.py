@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("TOKEN")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", True))
+DEBUG = int(os.environ.get("DEBUG", default=1))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -53,9 +53,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
+    'anymail',
 
     'accounts',
     'articles',
+    'newsletter',
 ]
 
 SITE_ID = 1
@@ -104,8 +106,12 @@ WSGI_APPLICATION = 'website.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        "ENGINE": os.environ.get("DB_ENGINE", 'django.db.backends.sqlite3'),
+        "NAME": os.environ.get("DB_DATABASE", BASE_DIR / 'db.sqlite3'),
+        "USER": os.environ.get("DB_USER", "user"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "user"),
+        "HOST": os.environ.get("DB_HOST", "localhost"),
+        "PORT": os.environ.get("DB_PORT", ""),
     }
 }
 
@@ -272,3 +278,15 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 LOGIN_REDIRECT_URL = '/'
+
+
+# Email settings
+
+EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
+
+
+# Anymail
+
+DEFAULT_FROM_EMAIL = "noreply@musicaldonut.ru"
+
+SERVER_EMAIL = "server@musicaldonut.ru"

@@ -1,10 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-$fontFamily: 'Comfortaa', Arial, Helvetica, sans-serif;
+$fontFamily: 'Comfortaa', cursive;
+$fontFamilyForText: 'Roboto', Arial, Helvetica, sans-serif;
 
-$headerHeigth: 6rem;
+$headerInfoHeight: 3.5rem;
 
 $headerSectionsHeight: 4rem;
+
+$headerHeigth: $headerInfoHeight + $headerSectionsHeight;
 
 $contentWidth: 1200px;
 
@@ -12,16 +16,22 @@ $articleContentWidth: 1000px;
 
 $articleImgWidth: 800px;
 
+$borderRadiusDefault: 20px;
+
 
 // MEDIA WIDTH
 
-$tabletWidth: 1200px;
-$phoneWidth: 800px;
+$widthXXS: 479px;
+$widthXS: 575px;
+$widthSM: 767px;
+$widthMD: 991px;
+$widthLG: 1199px;
 
 
 // Colors
 
 $colorWhite: #fff;
+$colorBlack: #000;
 $colorBrightGray: #eee;
 $colorGray: #666;
 $colorLightGray: #aaa;
@@ -39,3 +49,6 @@ $boxShadowArticleCover: 1px 0px 0px $colorYellow, 0px 1px 0px $colorDarkYellow,
     3px 2px 0px $colorYellow, 2px 3px 0px $colorDarkYellow,
     4px 3px 0px $colorYellow, 3px 4px 0px $colorDarkYellow,
     5px 4px 0px $colorYellow, 4px 5px 0px $colorDarkYellow;
+
+$boxShadowArticleCard: 0 2px 8px rgba(163, 163, 163, 0.3), 
+    0 4px 32px rgba(163, 163, 163, 0.4);

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.db.models import Q
+from .utils import replaceQuotes
 import re
 
 
@@ -237,6 +238,7 @@ class TextBlock(models.Model):
         return f"{temp_name}{temp_text}"
 
     def save(self, *args, **kwargs):
+        self.text = replaceQuotes(self.text)
         self.text = self.text\
             .replace("<ж>", "<b>").replace("</ж>", "</b>")\
             .replace("<к>", "<i>").replace("</к>", "</i>")\

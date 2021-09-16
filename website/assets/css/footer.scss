@@ -68,9 +68,9 @@ footer {
                     align-items: center;
                     color: rgb(220, 221, 190);
 
-                    a {
+                    .footer-button-item {
                         padding: 0.3em 0.5em;
-                        margin: 0 0.5em;
+                        margin: 0.5em;
                         border-bottom: 3px solid black;
                         box-shadow: inset 0 0 0 20px #444;
                         transition: all .2s linear;
@@ -108,6 +108,13 @@ footer {
                         }
                         100% {
                             box-shadow: 0 0 10px 10px rgba(63, 63, 63, 0.5);
+                        }
+                    }
+
+                    @media (max-width: $widthSM) {
+                        & {
+                            flex-direction: column;
+                            align-items: flex-start;
                         }
                     }
                 }

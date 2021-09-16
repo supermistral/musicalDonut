@@ -73,9 +73,16 @@ class TextBlockInline(admin.TabularInline):
     extra = 1
 
 
+@admin.action(description="Send email notification")
+def send_article_email_notification(modeladmin, request, queryset):
+    print(request)
+    print(queryset)
+
+
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     inlines = [SubdivisionInline]
+    actions = [send_article_email_notification]
 
 
 @admin.register(Subdivision)

@@ -1,0 +1,19 @@
+.article {
+    font-family: $fontFamilyForText;
+
+    .article-section {
+        font-family: $fontFamily;
+    }
+
+    .subdivision {
+
+        .song__data {
+            margin: 2rem 0 1.5rem;
+        }
+    }
+}
+
+.article-card .name {
+    font-family: $fontFamilyForText;
+    letter-spacing: 0.01em;
+}

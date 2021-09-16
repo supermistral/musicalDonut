@@ -69,6 +69,8 @@ const promisefilterRequest = async (needHistory = true) => {
         ...selectedStringData
     });
 
+    console.log(stringValues);
+
     prevStringValues = stringValues;
     if (needHistory) history.pushState(null, null, url);
 
@@ -87,8 +89,6 @@ const promisefilterRequest = async (needHistory = true) => {
 
 export const controlButtonsHandler = () => {
     const articlesContainer = document.querySelector('.content__articles');
-    prevStringValues = getSelectedStringValues();
-    console.log(prevStringValues);
 
     const filterRequest = (needHistory = true) => {
         promisefilterRequest(needHistory)
@@ -123,4 +123,6 @@ export const controlButtonsHandler = () => {
     });
 
     setSelectedItems();
+
+    prevStringValues = getSelectedStringValues();
 };

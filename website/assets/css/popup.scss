@@ -1,0 +1,164 @@
+
+.fullscreen-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+
+.img-fullsize__wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .img-fullsize__inner {
+        height: 85%;
+        margin: 1rem;
+        position: relative;
+        
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .cross {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 2em;
+            height: 2em;
+            opacity: 0.3;
+            transform: translate(100%, -100%);
+            cursor: pointer;
+
+            &:hover {
+                opacity: 1;
+            }
+
+            &::before, &::after {
+                position: absolute;
+                content: "";
+                width: 100%;
+                height: 5px;
+                background-color: #000;
+                top: 50%;
+                left: 0;
+                border-radius: 5px;
+            }
+
+            &::before {
+                transform: rotate(45deg);
+            }
+
+            &::after {
+                transform: rotate(-45deg);
+            }
+        }
+    }
+
+    @media(max-width: $articleImgWidth) {
+        .img-fullsize__inner {
+            height: auto;
+            width: 100%;
+            margin: 0;
+
+            .cross {
+                transform: translate(0, -100%);
+            }
+        }
+    }
+}
+
+.search-form__wrapper {
+    background-color: rgba(0, 0, 0, 0.8);
+    animation: searchFormFadeIn .3s ease-out;
+
+    @keyframes searchFormFadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+    
+    .search-form__inner {
+        max-width: $contentWidth;
+        margin: 0 auto;
+        margin-top: 20%;
+        padding: 1em;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: $borderRadiusDefault;
+
+        .search-form-top {
+            font-size: 4em;
+            font-weight: 800;
+            padding: 0.25em 0;
+        }
+
+        .search-form {
+            padding: 0.5em 0;
+            position: relative;
+            font-size: 1.5em;
+            display: flex;
+            
+            input {
+                width: 100%;
+                padding: 0.5em;
+                font-size: 1em;
+                letter-spacing: 0.02em;
+                background-color: $colorWhite;
+                animation: boxShadowOut .4s forwards;
+                transition: background-color .1s;
+                outline: none;
+                border: none;
+
+                &:focus, &:active {
+                    animation: boxShadowIn .4s forwards;
+                    transition: background-color .1s .15s;
+                    background-color: $colorLightBeige;
+                }
+            }
+
+            @keyframes boxShadowIn {
+                0% { box-shadow: 0.5em -0.5em $colorPurple; }
+                50% { box-shadow: none; }
+                100% { box-shadow: inset 0 0 0 3px $colorPurple; }
+            }
+
+            @keyframes boxShadowOut {
+                0% { box-shadow: inset 0 0 0 3px $colorPurple; }
+                50% { box-shadow: none; }
+                100% { box-shadow: 0.5em -0.5em $colorPurple; }
+            }
+
+            button {
+                font-size: 1.25em;
+                padding: 0.25em;
+                background-color: $colorBrightGray;
+                border-left: 1px solid $colorLightGray;
+
+                i {
+                    color: $colorBlack;
+                }
+
+                &:disabled i {
+                    color: $colorLightGray;
+                }
+            }
+        }
+
+        .search-form-bottom {
+            font-style: italic;
+            font-size: 1.25em;
+            padding: 0.5em;
+        }
+
+        .search-form-top, .search-form-bottom {
+            color: $colorWhite;
+            line-height: 1em;
+        }
+    }
+}

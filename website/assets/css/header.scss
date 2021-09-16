@@ -1,36 +1,60 @@
 header {
     position: fixed;
     top: 0;
-    height: $headerHeigth / 2;
+    height: $headerInfoHeight;
     margin: 0 auto;
     width: 100%;
     z-index: 100;
 
     .header-content {
-        height: 100%;
+        height: $headerInfoHeight;
         width: 100%;
         position: relative;
         z-index: 2;
+
+        .header-buttons {
+            display: flex;
+            align-items: center;
+            height: 100%;
+
+            & > * {
+                padding: 0 0.5em;
+            }
+
+            .search-button {
+                opacity: 0;
+                visibility: hidden;
+                display: none;
+            }
+
+            svg {
+                display: block;
+                width: 2em;
+                height: 2em;
+            }
+        }
     }
 
-    & > * {
-        height: $headerHeigth / 2;
+    .header-sections {
+        height: $headerSectionsHeight;
     }
 
     .header-info {
         display: flex;
+        align-items: center;
         padding: 0.5em 0;
-        z-index: 3;
+        height: 100%;
 
         & > * {
-            margin: 0 0.5em;
+            margin: 0 0.25em;
         }
         
         .header-name {
             flex-grow: 1;
             text-align: center;
-            padding: 0.2em 1em;
+            padding: 0.2em;
             font-size: 2.2em;
+            transition: all .3s;
         }
 
         .search {
@@ -95,6 +119,24 @@ header {
             }
         }
     }
+
+    &.blocked .header-content .search-button {
+        display: block;
+        opacity: 1;
+        visibility: visible;
+    }
+
+    @media (max-width: $widthMD) {
+        .header-content .header-buttons .search-button {
+            visibility: visible;
+            opacity: 1;
+            display: block;
+        }
+    }
+}
+
+header.with-sections + #content {
+    margin-top: $headerHeigth !important;
 }
 
 .header-sections {
@@ -187,14 +229,14 @@ header {
 
 #content .header-sections.blocked, 
 .with-sections .header-sections {
-    top: $headerHeigth / 2;
+    top: $headerInfoHeight;
     left: 0;
     transition: top .2s ease-in;
 }
 
 #content .header-sections.blocked {
     position: fixed;
-    top: $headerHeigth / 2;
+    top: $headerInfoHeight;
     height: $headerSectionsHeight;
     z-index: 99;
     width: 100%;

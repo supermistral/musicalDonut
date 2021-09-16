@@ -35,31 +35,6 @@ def filter_articles(request, articles, filter_key, callback, comparison_callback
 
 
 def get_filtered_articles(request, articles):
-    # Для фильтра исполнителей
-    # result_articles = []
-    # filter_singers_data = request.GET.get('singers', None)
-
-    # if filter_singers_data:
-    #     filter_singers_list = filter_singers_data.split("+")
-
-    #     for article in articles:
-    #         singers_list = article.singers_list()
-    #         if not singers_list:
-    #             continue
-
-    #         for singer in singers_list:
-    #             if singer in filter_singers_list:
-    #                 result_articles.append(article)
-    #                 break
-    # else:
-    #     result_articles = articles
-
-    # singers_comparison_callback = lambda item: item
-    # result_articles = filter_articles(request, articles, 'singers', Article.singers, singers_comparison_callback)
-
-    # genres_comparison_callback = lambda item: item.name_eng
-    # result_articles = filter_articles(request, result_articles, 'genres', Article.genres, genres_comparison_callback)
-
     result_articles = list(articles)
     
     filter_by_singers = request.GET.get('singers', None)
@@ -71,25 +46,7 @@ def get_filtered_articles(request, articles):
     if filter_by_genres:
         filter_genres_list = filter_by_genres.split("+")
         result_articles = list(filter(lambda item: item.contains_genres(filter_genres_list), result_articles))
-    
-    # articles = result_articles 
-    # result_articles = []
 
-    # filter_genres_data = request.GET.get('genres', None)
-
-    # if filter_genres_data:
-    #     filter_genres_list = filter_genres_data.split('+')
-
-    #     for article in articles:
-    #         genres = article.genres()
-    #         if not genres.exists():
-    #             continue
-
-    #         for genre in genres:
-    #             if genre.name_eng in filter_genres_list:
-    #                 result
-    # else:
-    #     result_articles = articles
     return result_articles
 
 def get_sorted_articles(request, articles, context=None):
