@@ -1,9 +1,9 @@
 from articles.models import *
 from django.shortcuts import render
 from django.views import generic
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from itertools import chain
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpRequest, HttpResponse
 from django.template.response import SimpleTemplateResponse
 
 SORTING_MESS = {
@@ -12,29 +12,7 @@ SORTING_MESS = {
 }
 
 
-def filter_articles(request, articles, filter_key, callback, comparison_callback):
-    result_articles = []
-    filter_data = request.GET.get(filter_key, None)
-
-    if filter_data:
-        filter_list = filter_data.split("+")
-
-        for article in articles:
-            items = callback(article)
-            if not items:
-                continue
-
-            for item in items:
-                if comparison_callback(item) in filter_list:
-                    result_articles.append(article)
-                    break
-    else:
-        result_articles = articles
-
-    return result_articles
-
-
-def get_filtered_articles(request, articles):
+def get_filtered_articles(request: HttpRequest, articles: QuerySet or list) -> list:
     result_articles = list(articles)
     
     filter_by_singers = request.GET.get('singers', None)
@@ -49,7 +27,8 @@ def get_filtered_articles(request, articles):
 
     return result_articles
 
-def get_sorted_articles(request, articles, context=None):
+def get_sorted_articles(request: HttpRequest, articles: QuerySet or list, 
+                        context: dict or None = None) -> list:
     result_articles = []
     sorting_key = request.GET.get('sorting', None)
     
@@ -69,12 +48,11 @@ def get_sorted_articles(request, articles, context=None):
     return result_articles
 
 
-def main_page(request):
-    last_article = Article.ready_objects.first()
-    articles = Article.ready_objects.all()
-    
+def handle_filtered_request(request: HttpRequest, articles: QuerySet or list, 
+                            last_article: Article or None = None) -> dict:
+    """Возвращает словарь с данными для ответа на запрос с фильтрами"""
+
     filters = {}
-    # filter_singers = []
     result_articles = []
     sorting_context = {
         "sorting_key": "date_desc",
@@ -83,7 +61,9 @@ def main_page(request):
     empty_message = "Статьи скоро появятся"
 
     if articles.exists():
-        articles = articles.exclude(id=last_article.id)
+
+        if last_article is not None:
+            articles = articles.exclude(id=last_article.id)
         
         # Фильтр
         result_articles = []
@@ -105,45 +85,69 @@ def main_page(request):
                 'empty_message': 'По вашему запросу ничего не найдено'
             })
             rendered_template = template.render().rendered_content
-            return JsonResponse({'html': rendered_template}, safe=False)
+            return {
+                'json': True,
+                'data': {
+                    'html': rendered_template
+                }
+            }
 
         # Singers filter list (ok)
-        filter_singers_names = []
+        filter_singers_names_lists = []         # список списков певцов (для подсчета)
         for article in articles:
-            filter_singers_names += article.singers_list()
+            filter_singers_names_lists.append(article.singers_list())
 
-        sorted_filter_singers_names = sorted(set(filter_singers_names))
-        # filter_singers = [{name: filter_singers_names.count(name)} for name in sorted_filter_singers_names]
+
+        filter_singers_names = list(chain(*filter_singers_names_lists))
+
+        sorted_filter_singers_names = sorted(set(filter_singers_names)) # список певцов
         filter_singers = [{
-            "name": name,
-            "value": name,
-            "count": filter_singers_names.count(name)
-        } for name in sorted_filter_singers_names]
+            "name": singer,
+            "value": singer,
+            "count": len([x for x in filter_singers_names_lists if singer in x])
+        } for singer in sorted_filter_singers_names]
         filters["singers"] = filter_singers
 
         # Genres filter list (ok)
-        filter_genres_names = []
+        filter_genres_names_lists = []          # список списков жанров (для подсчета статей)
         for article in articles:
-            filter_genres_names += article.genres()
+            filter_genres_names_lists.append(article.genres())
+
+        filter_genres_names = list(chain(*filter_genres_names_lists))   # список жанров
 
         sorted_filter_genres_names = sorted(set(filter_genres_names), key=lambda genre: genre.name)
         filter_genres = [{
                 "name": genre.name, 
                 "value": genre.name_eng, 
-                "count": filter_genres_names.count(genre)
+                "count": len([x for x in filter_genres_names_lists if genre in x])
             } for genre in sorted_filter_genres_names]
         filters["genres"] = filter_genres
+
+    return {
+        'json': False,
+        'data': {
+            'filters': filters,
+            'articles': result_articles,
+            'empty_message': empty_message,
+            'last_article': [last_article],
+            **sorting_context
+        }    
+    }
+
+
+def main_page(request: HttpRequest) -> HttpResponse or JsonReponse:
+    last_article = Article.ready_objects.first()
+    articles = Article.ready_objects.all()
+
+    data_to_render = handle_filtered_request(request, articles, last_article)
+    
+    if data_to_render['json']:
+        return JsonResponse({**data_to_render['data']}, safe=False)
 
     return render(
         request, 
         'main/start_page.html', 
-        context={
-            'articles': result_articles,
-            'last_article': [last_article],     # must be list
-            'filters': filters,
-            'empty_message': empty_message,
-            **sorting_context
-        }
+        context={**data_to_render['data']}
     )
 
 
@@ -161,9 +165,20 @@ class SectionDetail(generic.DetailView):
     context_object_name = 'section'
     slug_field = 'name_for_url'
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        data_to_render = handle_filtered_request(request, context['articles'])
+
+        if data_to_render['json']:
+            return JsonResponse({**data_to_render['data']}, safe=False)
+
+        return self.render_to_response({**context, **data_to_render['data']})
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["articles"] = Article.ready_objects.filter(section=self.object)
+        context['articles'] = Article.ready_objects.filter(section=self.object)
+        
         return context
 
 
@@ -186,16 +201,12 @@ class SearchArticlesList(generic.ListView):
         result = chain(articles)
         ready_articles = Article.ready_objects.all()
 
-        print(result)
-
         for block in textblocks:
             temp_article = block.subdivision.article
             if (temp_article not in result) and (temp_article in ready_articles):
                 result.append(temp_article)
 
         result = sorted(result, key=lambda article: article.date_release, reverse=True)
-
-        print(result)
         
         return result
 
@@ -213,3 +224,7 @@ class ArticleDetail(generic.DetailView):
             raise Http404()
             
         return obj
+
+
+def handler404(request, exception=None):
+    return render(request, 'error/page404.html')

@@ -1,5 +1,6 @@
 import { controlButtonsHandler } from "./control_buttons";
 import { CSS_CLASSES } from "./constants";
+import { isTouchDevice } from "./utils/dom";
 import { popupClickHandler } from "./utils/popup";
 
 
@@ -420,6 +421,7 @@ const scrollHandler = () => {
     );
 };
 
+// Доделать почту
 const mailingClickHandler = () => {
     const mailingButton = document.querySelector('mailing-button');
     if (!mailingButton) return;
@@ -440,6 +442,36 @@ const mailingClickHandler = () => {
     }
 }
 
+const hidePreloader = () => {
+    const preloader = document.getElementById('preloader');
+    preloader.classList.add('will-be-hidden');
+    
+   setTimeout(() => {
+        preloader.remove();
+    }, 1000);
+}
+
+const setArticleCardsTouchEvent = () => {
+    if (isTouchDevice()) {
+        const   articleCards = document.querySelectorAll('.article-card'),
+                touchClass   = 'touch';
+
+        articleCards.forEach(card => {
+            const   articleImg  = card.querySelector('.article-img'),
+                    hm          = new Hammer(articleImg);
+
+            hm.on('tap', e => {
+                if (card.classList.contains(touchClass)) {
+                    card.classList.remove(touchClass);
+                } else {
+                    articleCards.forEach(el => el.classList.remove(touchClass));
+                    card.classList.add(touchClass);
+                }
+            });
+        });
+    }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     scrollHandler();
     searchFormClickHandler();
@@ -447,4 +479,7 @@ window.addEventListener('DOMContentLoaded', () => {
     imageInitClickHandler();
     sliderHandler();
     musicSliderHandler();
+    setArticleCardsTouchEvent();
+
+    hidePreloader();
 });

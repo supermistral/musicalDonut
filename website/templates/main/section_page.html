@@ -7,6 +7,20 @@
 {% endblock %}
 
 {% block main_content %}
+<div class="content__above-articles">
+    <div class="content__articles-name">
+        <!-- <h2>Все статьи</h2> -->
+    </div>
+    <div class="control-buttons">
+        <div class="button-sorting">
+            {% include 'additions/sorting.html' with sorting_key=sorting_key|default:"date_desc" sorting_value=sorting_value|default:"Дата по убыванию" %}
+        </div>
+        <div class="button-filters">
+            {% include 'additions/filters.html' with filter_singers=filter_singers %}
+        </div>
+    </div>
+    <div class="selected-filters"></div>
+</div>
 <div class="content__articles">
     {% include 'articles/article_cards.html' with articles=articles %}
 </div>
