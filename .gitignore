@@ -13,7 +13,10 @@ migrations
 
 *.css.map
 
-media/
+*/media/*
+!*/media/default
+!*/media/site
+
 staticfiles/
 static/
 
