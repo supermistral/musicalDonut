@@ -368,7 +368,7 @@ class Subdivision(models.Model):
 
 
 class ImageSlider(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=70)
 
     def get_relation(self, str_relation, class_name):
         try:

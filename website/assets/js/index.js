@@ -460,7 +460,7 @@ const setArticleCardsTouchEvent = () => {
             const   articleImg  = card.querySelector('.article-img'),
                     hm          = new Hammer(articleImg);
 
-            hm.on('tap', e => {
+            hm.on('press', e => {
                 if (card.classList.contains(touchClass)) {
                     card.classList.remove(touchClass);
                 } else {

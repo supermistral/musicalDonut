@@ -53,11 +53,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
-    'anymail',
+    #'anymail',
 
     'accounts',
     'articles',
-    'newsletter',
+    #'newsletter',
 ]
 
 SITE_ID = 1
@@ -250,10 +250,10 @@ SASS_PROCESSOR_ROOT = STATIC_ROOT
 NODE_MODULES_URL = STATIC_URL + 'node_modules/'
 
 # Отключен автопрефикс
-NODE_NPX_PATH = None
+# NODE_NPX_PATH = None
 
 SASS_PROCESSOR_INCLUDE_DIRS = [
-    os.path.join(BASE_DIR, 'node_modules/'),
+    os.path.join(BASE_DIR, 'node_modules'),
 ]
 
 # COMPRESS_ROOT = STATIC_ROOT
@@ -282,11 +282,11 @@ LOGIN_REDIRECT_URL = '/'
 
 # Email settings
 
-EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 
 # Anymail
 
-DEFAULT_FROM_EMAIL = "noreply@musicaldonut.ru"
+# DEFAULT_FROM_EMAIL = "noreply@musicaldonut.ru"
 
-SERVER_EMAIL = "server@musicaldonut.ru"
+# SERVER_EMAIL = "server@musicaldonut.ru"

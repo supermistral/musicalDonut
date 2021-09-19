@@ -23,7 +23,7 @@ urlpatterns = [
     path('search/', views.SearchArticlesList.as_view(), name="search_articles"),
     path('articles/<int:pk>/', views.ArticleDetail.as_view(), name="article"),
     path('accounts/', include('accounts.urls')),
-    path('newsletter/', include('newsletter.urls', namespace='newsletter')),
+    #path('newsletter/', include('newsletter.urls', namespace='newsletter')),
 ]
 
 if settings.DEBUG:

@@ -24,6 +24,8 @@ html {
     font-family: $fontFamily;
     font-weight: 500;
     line-height: 1.1;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    -webkit-tap-highlight-color: transparent; 
 
     @media (max-width: $widthSM) {
         font-size: 16px;
@@ -43,7 +45,7 @@ h1, h2, h3, h4, h5, h6 {
 
 blockquote {
     font-style: italic;
-    line-height: 1.5em;
+    line-height: 1.2em;
 }
 
 button {
@@ -549,7 +551,7 @@ i {
             }
 
             .last-article {
-                max-width: 70%;
+                width: 70%;
                 font-size: 1.1em;
     
                 .song-preview .song-preview__info > * {
