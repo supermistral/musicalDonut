@@ -133,6 +133,10 @@ header {
             display: block;
         }
     }
+
+    @media (max-width: $widthXS) {
+        font-size: 16px;
+    }
 }
 
 header.with-sections + #content {
@@ -172,11 +176,15 @@ header.with-sections + #content {
             }
 
             &:nth-child(1)::before {
-                background-color: $colorVioletDefault;
+                background-image: linear-gradient(to right, #ffc340 25%, #fbc5ac 75%);
             }
 
             &:nth-child(2)::before {
-                background-color: $colorYellowDefault;
+                background-image: linear-gradient(to right, #fbc5ac 25%, #fff276 75%);
+            }
+
+            &:nth-child(3)::before {
+                background-image: linear-gradient(to right, #fff276 25%, #fcddd2 75%);
             }
 
             &:hover::before, &.active::before {

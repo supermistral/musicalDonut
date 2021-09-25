@@ -27,9 +27,7 @@ html {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
     -webkit-tap-highlight-color: transparent; 
 
-    @media (max-width: $widthSM) {
-        font-size: 16px;
-    }
+
 }
 
 a {
@@ -73,6 +71,22 @@ i {
     display: block;
 }
 
+@mixin hover-supported {
+    @media not all and (pointer: coarse) {
+        &:hover {
+            @content;
+        }
+    }
+}
+
+@mixin hover-supported-without-hover {
+    @media not all and (pointer: coarse) {
+        & {
+            @content;
+        }
+    }
+}
+
 @mixin anim-upwards {
     opacity: 0;
     visibility: hidden;
@@ -81,16 +95,25 @@ i {
         visibility .2s ease-out, 
         transform .2s ease-out;
 
-    &.active, &:hover {
+    &:hover {
         opacity: 1;
         visibility: visible;
         transform: translateY(0);
+    }
+
+    @include hover-supported-without-hover() {
+        &.active  {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
     }
 }
 
 .anim-upwards {
     @include anim-upwards;
 }
+
 
 .button__container:hover .sorting-items {
     opacity: 1;
@@ -160,7 +183,7 @@ i {
             position: relative;
             cursor: pointer;
             box-shadow: $boxShadowArticleCard;
-            transition: all .2s ease;
+            transition: border-radius .2s ease;
 
             &, .article-img, .article-cover, .article-info .info {
                 border-radius: $borderRadiusDefault;
@@ -192,7 +215,9 @@ i {
                 bottom: 0;
                 font-size: 0.9em;
                 background-color: $colorLightBeige;
-                transition: all .2s ease-out;
+                transition-property: transform, box-shadow;
+                transition-duration: .2s;
+                transition-timing-function: ease-out;
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
 
@@ -202,7 +227,10 @@ i {
                     font-size: 1.2em;
                     color: $colorPurple;
                     padding: 0.4em 0;
-                    transition: all .2s ease-in, color .05s linear;
+                    background-color: $colorLightBeige;
+                    transition-property: transform, box-shadow, color;
+                    transition-duration: .2s, .2s, .05s;
+                    transition-timing-function: ease-in, ease-in, linear;
 
                     &:hover {
                         color: $colorPurpleHover;
@@ -230,13 +258,17 @@ i {
                 top: 0;
                 left: 0;
                 width: 100%;
-                transition: all .2s ease-out;
+                transition: top .2s ease-out;
     
                 .info {
                     width: 100%;
                     display: flex;
                     justify-content: space-between;
-                    transition: all .1s ease-out;
+                    border: 2px solid transparent;
+                    border-bottom: 0;
+                    transition-property: background-color, border-color, box-shadow;
+                    transition-duration: .1s;
+                    transition-timing-function: ease-out;
                     border-bottom-left-radius: 0;
                     border-bottom-right-radius: 0;
     
@@ -251,27 +283,6 @@ i {
                         padding: 0.3em 1em;
                         font-size: 1.2em;
                         transition: all .2s ease;
-        
-                        .number-cover {
-                            position: relative;
-        
-                            & > * {
-                                position: absolute;
-                                transition: all .2s ease;
-                            }
-        
-                            .first {
-                                color: rgba(255, 0, 0, 0.5);
-                                right: -3px;
-                                top: 1px;
-                            }
-        
-                            .second {
-                                color: rgba(0, 0, 255, 0.5);
-                                right: 3px;
-                                top: -1px;
-                            }
-                        }
                     }
                 }
             }
@@ -296,7 +307,7 @@ i {
                         padding: 0.25rem 1em;
                         background-color: rgba(0, 0, 0, 0.6);
                         width: 50%;
-                        transition: all .3s ease-out;
+                        transition: transform .3s ease-out;
                     }
     
                     .singer {
@@ -309,8 +320,8 @@ i {
                     }
                 }
             }
-    
-            &:hover, &.touch {
+            
+            @mixin articleCardHover {
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
 
@@ -327,8 +338,7 @@ i {
 
                     .info {
                         background-color: $colorLightBeige;
-                        border: 2px solid $colorPurple;
-                        border-bottom: 0;
+                        border-color: $colorPurple;
                         box-shadow: inset 0px 3px 10px rgba(163, 163, 163, 0.2), 
                             $boxShadowArticleCard,
                             0 0 0 5px transparent;
@@ -352,17 +362,11 @@ i {
     
                 .number {
                     background-color: #fff;
-
-                    .number-cover > * {
-                        top: 0 !important;
-                        right: 0 !important;
-                    }
                 }
     
                 .article-cover {
 
                     &, .section {
-                        background-color: rgb(255, 252, 51);
                         transform: translate(-5px, -5px);
                         box-shadow: $boxShadowArticleCover;
                     }
@@ -384,6 +388,13 @@ i {
                 }
             }
 
+            @include hover-supported() {
+                @include articleCardHover;
+            }
+
+            &.touch {
+                @include articleCardHover;
+            }
         }
     }
 
@@ -528,7 +539,7 @@ i {
                             align-items: flex-start;
 
                             .stylized-button {
-                                font-size: 1.15rem;
+                                font-size: 1.15em;
                             }
                         }
                     }
@@ -547,6 +558,10 @@ i {
                         0 1px 1px #000, 
                         -1px 0 1px #000, 
                         0 -1px 1px #000;
+                }
+
+                @media (max-width: $widthXS) {
+                    font-size: 16px;
                 }
             }
 

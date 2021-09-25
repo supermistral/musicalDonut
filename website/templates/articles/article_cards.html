@@ -1,8 +1,25 @@
 {% for article in articles %}
     <div class="article-card__wrapper{% if card_classes %} {{card_classes}}{% endif %}">
         <div class="article-card">
-            <div class="article-img">
-                <img src="{{ article.image.url }}" alt="...">
+            <div class="article-card-content">
+                <div class="article-img">
+                    <img src="{{ article.image.url }}" alt="...">
+                </div>
+                <div class="article-info">
+                    <div class="info">
+                        <div class="date">
+                            <div class="date-release">
+                                <span>
+                                    <i class="far fa-calendar-check"></i>
+                                </span> {{ article.date_release|date:"H:j d E" }}
+                            </div>
+                        </div>
+                        <div class="number">
+                            <div class="number-cover">№{{ article.number }}</div>
+                        </div>
+                    </div>
+                    {% include 'articles/song_preview.html' with article=article %}
+                </div>
             </div>
             <div class="article-cover">
                 {% if cover_section %}
@@ -20,21 +37,6 @@
                         {% endif %}
                     </div>
                 </a>
-            </div>
-            <div class="article-info">
-                <div class="info">
-                    <div class="date">
-                        <div class="date-release">
-                            <span>
-                                <i class="far fa-calendar-check"></i>
-                            </span> {{ article.date_release|date:"H:j d E" }}
-                        </div>
-                    </div>
-                    <div class="number">
-                        <div class="number-cover">№{{ article.number }}</div>
-                    </div>
-                </div>
-                {% include 'articles/song_preview.html' with article=article %}
             </div>
         </div>
         

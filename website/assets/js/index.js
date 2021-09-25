@@ -445,8 +445,8 @@ const mailingClickHandler = () => {
 const hidePreloader = () => {
     const preloader = document.getElementById('preloader');
     preloader.classList.add('will-be-hidden');
-    
-   setTimeout(() => {
+
+    setTimeout(() => {
         preloader.remove();
     }, 1000);
 }
@@ -457,10 +457,9 @@ const setArticleCardsTouchEvent = () => {
                 touchClass   = 'touch';
 
         articleCards.forEach(card => {
-            const   articleImg  = card.querySelector('.article-img'),
-                    hm          = new Hammer(articleImg);
+            const articleContent = card.querySelector('.article-card-content');
 
-            hm.on('press', e => {
+            articleContent.addEventListener('click', e => {
                 if (card.classList.contains(touchClass)) {
                     card.classList.remove(touchClass);
                 } else {
@@ -480,6 +479,8 @@ window.addEventListener('DOMContentLoaded', () => {
     sliderHandler();
     musicSliderHandler();
     setArticleCardsTouchEvent();
-
-    hidePreloader();
 });
+
+window.addEventListener('load', e => {
+    hidePreloader();
+})
