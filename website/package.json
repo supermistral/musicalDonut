@@ -12,6 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.15.0",
+    "@babel/plugin-transform-runtime": "^7.15.0",
     "@babel/preset-env": "^7.15.0",
     "autoprefixer": "^10.3.1",
     "axios": "^0.21.1",
@@ -20,7 +21,6 @@
     "npx": "^10.2.2",
     "postcss-cli": "^8.3.1",
     "webpack": "^5.50.0",
-    "webpack-bundle-tracker": "^1.2.0",
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2"
   },
@@ -30,7 +30,6 @@
     "not dead"
   ],
   "dependencies": {
-    "core-js": "^3.16.2",
-    "regenerator-runtime": "^0.13.9"
+    "@babel/runtime": "^7.15.4"
   }
 }

@@ -215,9 +215,7 @@ i {
                 bottom: 0;
                 font-size: 0.9em;
                 background-color: $colorLightBeige;
-                transition-property: transform, box-shadow;
-                transition-duration: .2s;
-                transition-timing-function: ease-out;
+                transition: transform .2s ease-out, box-shadow .2s ease-out;
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
 
@@ -228,9 +226,9 @@ i {
                     color: $colorPurple;
                     padding: 0.4em 0;
                     background-color: $colorLightBeige;
-                    transition-property: transform, box-shadow, color;
-                    transition-duration: .2s, .2s, .05s;
-                    transition-timing-function: ease-in, ease-in, linear;
+                    transition: transform .2s ease-in, 
+                        box-shadow .2s ease-in, 
+                        color .05s linear;
 
                     &:hover {
                         color: $colorPurpleHover;
@@ -266,9 +264,9 @@ i {
                     justify-content: space-between;
                     border: 2px solid transparent;
                     border-bottom: 0;
-                    transition-property: background-color, border-color, box-shadow;
-                    transition-duration: .1s;
-                    transition-timing-function: ease-out;
+                    transition: background-color .1s ease-out, 
+                        border-color .2s ease-out,
+                        box-shadow .2s ease-out; 
                     border-bottom-left-radius: 0;
                     border-bottom-right-radius: 0;
     

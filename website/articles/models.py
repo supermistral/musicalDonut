@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.db.models import Q
 from .utils import replaceQuotes
+from .custom_fields import CompressedImageField
 import re
 
 
@@ -258,10 +259,16 @@ class Article(models.Model):
         null=True, 
         related_name='articles'
     )
-    image = models.ImageField(
+    # image = models.ImageField(
+    #     upload_to='articles',
+    #     default='default/article.jpg',
+    #     blank=True
+    # )
+    image = CompressedImageField(
         upload_to='articles',
         default='default/article.jpg',
-        blank=True
+        blank=True,
+        quality=80
     )
     slider = models.OneToOneField(
         'ImageSlider', 
@@ -415,7 +422,8 @@ class ImageUnit(models.Model):
         on_delete=models.CASCADE, 
         related_name='images'
     )
-    image = models.ImageField(upload_to="sliders", blank=True, null=True)
+    # image = models.ImageField(upload_to="sliders", blank=True, null=True)
+    image = CompressedImageField(upload_to="sliders", blank=True, null=True, quality=70)
     video = models.TextField(blank=True, null=True)
     
     def save(self, *args, **kwargs):
