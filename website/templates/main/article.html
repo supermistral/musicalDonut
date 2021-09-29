@@ -48,14 +48,14 @@
                             {% endautoescape %}
                         </p>
                     {% elif tb.text_class == "right" %}
-                        {% include 'articles/slider.html' with slider=tb.slider class="right" %}
+                        {% include 'articles/slider.html' with slider=tb.slider class="left" %}
                         <p>
                             {% autoescape off %}
                                 {{ tb.text|linebreaksbr }}
                             {% endautoescape %}
                         </p>
                     {% else %}
-                        {% include 'articles/slider.html' with slider=tb.slider class="left" %}
+                        {% include 'articles/slider.html' with slider=tb.slider class="right" %}
                         <p>
                             {% autoescape off %}
                                 {{ tb.text|linebreaksbr }}
@@ -67,27 +67,29 @@
             {% if subdivision.song %}
                 {% music_refs vk=subdivision.song.ref_vk yandex=subdivision.song.ref_yandex spotify=subdivision.song.ref_spotify apple=subdivision.song.ref_apple subdivision=article.song.ref_youtube deezer=subdivision.song.ref_deezer as refs %}
                     {% if refs %}
-                    <div class="song__control">
+                    <div class="song__control" data-id="{{ subdivision.song.id }}">
                         <div class="song__control-buttons">
                             <a class="open-refs"><span class="text">Показать виджеты</span> <span class="icon"><i class="fas fa-sliders-h"></i></span></a>
                         </div>
                         <div class="song__refs">
-                            <div class="song__content">
-                                <div class="song__container">           
-                                    {% for ref in refs %}
-                                        {% if ref.refvalue %}
-                                            <div class="song" data-service="{{ ref.refkey }}">
-                                                {% autoescape off %}{{ ref.refvalue }}{% endautoescape %}
-                                            </div>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                                <div class="song__info">
-                                    <div class="settings">
-                                        <i class="fas fa-angle-double-right"></i>
-                                    </div>
+
+                            {% if request.COOKIES.song_refs_enabled and request.COOKIES.song_refs_enabled == '1' %}
+                            <div class="song__container">           
+                                {% for ref in refs %}
+                                    {% if ref.refvalue %}
+                                        <div class="song" data-service="{{ ref.refkey }}">
+                                            {% autoescape off %}{{ ref.refvalue }}{% endautoescape %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="song__info">
+                                <div class="settings">
+                                    <i class="fas fa-angle-double-right"></i>
                                 </div>
                             </div>
+                            {% endif %}
+
                         </div>
                     </div>
                     {% endif %}
@@ -101,12 +103,14 @@
     {% if article.song %}
         {% music_refs vk=article.song.ref_vk yandex=article.song.ref_yandex spotify=article.song.ref_spotify apple=article.song.ref_apple youtube=article.song.ref_youtube deezer=article.song.ref_deezer as refs %}
             {% if refs %}
-            <div class="song__control">
+            <div class="song__control" data-id="{{ article.song.id }}">
                 <div class="song__control-buttons">
                     <a class="open-refs"><span class="text">Показать виджеты</span> <span class="icon"><i class="fas fa-sliders-h"></i></span></a>
                 </div>
                 <div class="song__refs">
                     <!-- Адаптировать под обычные треки -->
+
+                    {% if request.COOKIES.song_refs_enabled and request.COOKIES.song_refs_enabled == '1' %}
                     <div class="song__container {% if article.song.is_album %}playlist{% endif %}">
                         {% for ref in refs %}
                             {% if ref.refvalue %}
@@ -121,6 +125,8 @@
                             <i class="fas fa-angle-double-right"></i>
                         </div>
                     </div>
+                    {% endif %}
+
                 </div>
             </div>
             {% endif %}

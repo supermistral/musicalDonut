@@ -22,7 +22,7 @@
             width: 10em;
             height: 10em;
             transition: all 1s linear;
-            animation: preloader 5s cubic-bezier(.18,.67,.46,-1.85) infinite;
+            animation: preloader 1s ease-in-out infinite;
         }
 
         @keyframes preloader {

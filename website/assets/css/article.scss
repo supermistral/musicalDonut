@@ -6,13 +6,15 @@
     }
 
     .subdivision {
+        padding-top: 1px;
+        clear: both;
 
         .song__data {
             margin: 2rem 0 1.5rem;
         }
 
-        .subdivision__item {
-            line-height: 1.25;
+        p {
+            line-height: 1.5;
         }
     }
 }

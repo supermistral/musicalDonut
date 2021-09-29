@@ -3,6 +3,7 @@
 
 $fontFamily: 'Comfortaa', cursive;
 $fontFamilyForText: 'Roboto', Arial, Helvetica, sans-serif;
+$fontSize: 18px;
 
 $headerInfoHeight: 3.5rem;
 
@@ -54,11 +55,15 @@ $colorSection3: rgb(235, 163, 235);
 
 
 $boxShadowArticleCover: 
-    1px 0px 0px $colorLightBeigeShadow, 0px 1px 0px $colorLightBeigeShadowDark,
-    2px 1px 0px $colorLightBeigeShadow, 1px 2px 0px $colorLightBeigeShadowDark,
-    3px 2px 0px $colorLightBeigeShadow, 2px 3px 0px $colorLightBeigeShadowDark,
+    5px 4px 0px $colorLightBeigeShadow, 4px 5px 0px $colorLightBeigeShadowDark,
     4px 3px 0px $colorLightBeigeShadow, 3px 4px 0px $colorLightBeigeShadowDark,
-    5px 4px 0px $colorLightBeigeShadow, 4px 5px 0px $colorLightBeigeShadowDark;
+    3px 2px 0px $colorLightBeigeShadow, 2px 3px 0px $colorLightBeigeShadowDark,
+    2px 1px 0px $colorLightBeigeShadow, 1px 2px 0px $colorLightBeigeShadowDark,
+    1px 0px 0px $colorLightBeigeShadow, 0px 1px 0px $colorLightBeigeShadowDark;
+    
+    
+    
+    
 
 $boxShadowArticleCard: 0 2px 8px rgba(163, 163, 163, 0.3), 
     0 4px 32px rgba(163, 163, 163, 0.4);

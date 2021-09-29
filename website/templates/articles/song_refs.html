@@ -1,0 +1,21 @@
+{% if song and enabled == '1' %}
+    {% load music_refs %}
+    {% music_refs vk=song.ref_vk yandex=song.ref_yandex spotify=song.ref_spotify apple=song.ref_apple youtube=song.ref_youtube deezer=song.ref_deezer as refs %}
+        {% if refs %}
+            <!-- Адаптировать под обычные треки -->
+            <div class="song__container{% if song.is_album %} playlist{% endif %}">
+                {% for ref in refs %}
+                    {% if ref.refvalue %}
+                        <div class="song" data-service="{{ ref.refkey }}">
+                            {% autoescape off %}{{ ref.refvalue }}{% endautoescape %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="song__info">
+                <div class="settings">
+                    <i class="fas fa-angle-double-right"></i>
+                </div>
+            </div>
+        {% endif %}
+{% endif %}

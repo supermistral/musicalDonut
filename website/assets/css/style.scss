@@ -20,14 +20,12 @@ html, body {
 }
 
 html {
-    font-size: 18px;
+    font-size: $fontSize;
     font-family: $fontFamily;
     font-weight: 500;
     line-height: 1.1;
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
     -webkit-tap-highlight-color: transparent; 
-
-
 }
 
 a {
@@ -200,11 +198,11 @@ i {
                 img {
                     position: absolute;
                     left: 0;
-                    top: 0;
+                    top: 50%;
                     object-fit: cover;
                     width: 100%;
                     height: auto;
-                    transform: translateY(-25%);
+                    transform: translateY(-50%);
                 }    
             }
     
@@ -215,7 +213,7 @@ i {
                 bottom: 0;
                 font-size: 0.9em;
                 background-color: $colorLightBeige;
-                transition: transform .2s ease-out, box-shadow .2s ease-out;
+                transition: transform .2s ease-out, box-shadow .1s ease-out .1s;
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
 
@@ -226,9 +224,7 @@ i {
                     color: $colorPurple;
                     padding: 0.4em 0;
                     background-color: $colorLightBeige;
-                    transition: transform .2s ease-in, 
-                        box-shadow .2s ease-in, 
-                        color .05s linear;
+                    transition: transform .2s ease-in, color .05s linear;
 
                     &:hover {
                         color: $colorPurpleHover;
@@ -256,7 +252,8 @@ i {
                 top: 0;
                 left: 0;
                 width: 100%;
-                transition: top .2s ease-out;
+                transform: translateY(0);
+                transition: transform .2s ease-out;
     
                 .info {
                     width: 100%;
@@ -293,7 +290,7 @@ i {
                 width: 100%;
                 color: #fff;
                 overflow: hidden;
-                font-size: 0.8em;
+                font-size: calc(1em - 2px);
     
                 .song-preview__info {
                     margin: 0;
@@ -302,10 +299,17 @@ i {
                     justify-content: space-between;
     
                     & > * {
-                        padding: 0.25rem 1em;
+                        line-height: 1;
+                        padding: 0.25em 0.5em;
                         background-color: rgba(0, 0, 0, 0.6);
                         width: 50%;
                         transition: transform .3s ease-out;
+                    }
+
+                    &:first-child {
+                        & > * {
+                            padding-top: 0.5em;
+                        }
                     }
     
                     .singer {
@@ -332,7 +336,7 @@ i {
                 }
                 
                 .article-info {
-                    top: -3em;
+                    transform: translateY(-3em);
 
                     .info {
                         background-color: $colorLightBeige;
@@ -345,7 +349,7 @@ i {
     
                 .song-preview {
                     .song-preview__info > * {
-                        transform: none;
+                        transform: translate(0, 0);
                     }
                     @for $i from 1 to 10 {
                         .song-preview__info:nth-child(#{$i}) > * {
@@ -363,11 +367,9 @@ i {
                 }
     
                 .article-cover {
-
-                    &, .section {
-                        transform: translate(-5px, -5px);
-                        box-shadow: $boxShadowArticleCover;
-                    }
+                    transform: translate(-5px, -5px);
+                    box-shadow: $boxShadowArticleCover;
+                    transition-delay: 0s, 0s ;
 
                     .name {
 
@@ -411,18 +413,15 @@ i {
 
         .left, .right {
             float: none !important;
+            max-width: $articleImgWidth !important;
         }
     }
 
     @media (max-width: $widthSM) {
         .article-card {
 
-            .article-info {
-                font-size: 0.9em;
-            }
-
             .song-preview__info > * {
-                padding: 0.3em !important;
+                padding: 8px !important;
             }
         }
     }
@@ -565,10 +564,16 @@ i {
 
             .last-article {
                 width: 70%;
-                font-size: 1.1em;
+                font-size: calc(1em + 1px);
     
-                .song-preview .song-preview__info > * {
-                    padding: 0.5rem 1em;
+                .song-preview .song-preview__info {
+                    &:first-child > * {
+                        padding-top: 0.75em;
+                    }
+
+                    & > * {
+                        padding: 0.5em 0.75em;
+                    }
                 } 
             }
 
@@ -625,7 +630,7 @@ i {
         padding: 0 0 1em;
 
         .article-card__wrapper {
-            width: 33.33333%;
+            width: 33.3%;
         }
 
         @media (max-width: $widthLG) {
@@ -663,7 +668,7 @@ i {
             min-width: 100%;
             height: auto;
 
-            img {
+            .img-cover {
                 max-width: $articleImgWidth;
             }
         }
@@ -671,7 +676,6 @@ i {
         .left, .right {
             max-width: 50%;
             margin-top: 0;
-            margin-bottom: 1.5rem;
         }
 
         img {
@@ -691,9 +695,7 @@ i {
         }
 
         .img-cover {
-            margin: 0 auto;
             position: relative;
-            text-align: center;
 
             .caption {
                 padding: 0.5rem 0;
@@ -725,12 +727,12 @@ i {
                 top: 0;
                 right: 0;
                 background-color: rgba(0, 0, 0, 0.5);
-                font-size: 0.7em;
-                padding: 0.3em 0.4em;
+                font-size: 0.9em;
+                padding: 0.5em 0.3em;
                 border-radius: 5px;
                 color: #fff;
                 opacity: 0;
-                transition: all .3s;
+                transition: opacity .3s;
                 z-index: 2;
             }
 
@@ -742,9 +744,8 @@ i {
                 height: 3em;
                 cursor: pointer;
                 z-index: 10;
-                transition: all .3s;
+                transition: opacity .3s;
                 opacity: 0;
-                visibility: hidden;
 
                 &.prev {
                     left: 0;
@@ -808,7 +809,7 @@ i {
                     width: 100%;
                     opacity: 0;
                     visibility: hidden;
-                    transition: all .3s;
+                    transition: opacity .3s, visibility .3s;
 
                     &.active {
                         opacity: 1;
@@ -909,11 +910,6 @@ i {
             width: 100%;
             display: flex;
 
-            .song__content {
-                width: 100%;
-                display: flex;
-            }
-
             .song__container {
                 width: 80%;
                 min-height: 200px;
@@ -974,7 +970,7 @@ i {
             display: flex;
             opacity: 0;
             visibility: hidden;
-            transition: all .3s;
+            transition: opacity .3s, visibility .3s;
             cursor: pointer;
 
             &.active {

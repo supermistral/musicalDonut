@@ -1,6 +1,6 @@
 import { controlButtonsHandler } from "./control_buttons";
-import { CSS_CLASSES } from "./constants";
-import { isTouchDevice } from "./utils/dom";
+import { CSS_CLASSES, BASE_URL } from "./constants";
+import { getCookie, isTouchDevice, setCookie } from "./utils/dom";
 import { popupClickHandler } from "./utils/popup";
 
 
@@ -106,7 +106,11 @@ const sliderHandler = () => {
         arrowNext.addEventListener('click', () => {
             clickHandler(nextClick);
         });
-    })
+    });
+
+    if (document.body.clientWidth <= maxHeigth) {
+        sliderResizeHandler();
+    }
 };
 
 const musicSliderHandler = () => {
@@ -163,8 +167,8 @@ const musicSliderHandler = () => {
         localStorage.setItem('musicService', service);
     }
     
-    const setActiveSongs = (service) => {
-        songRefs.forEach(songRef => {
+    const setActiveSongs = (service, elem = null) => {
+        const setActiveSong = (songRef) => {
             const songContainer = songRef.querySelector('.song__container');
 
             let activeSongBefore = null;
@@ -183,7 +187,11 @@ const musicSliderHandler = () => {
             } else {
                 songContainer.children[0].classList.add('active');
             }
-        });
+        }
+
+        elem 
+            ? setActiveSong(elem)
+            : songRefs.forEach(songRef => { setActiveSong(songRef) });
     }
 
     // разница для корректного перемещения слайдера между блоками
@@ -213,15 +221,18 @@ const musicSliderHandler = () => {
         });
     });
 
-    musicSlider.addEventListener('mousedown', e => {
+    const getClientY = event => event.clientY || event.touches[0].clientY;
+    const getClientX = event => event.clientX || event.touches[0].clientY; 
+
+    const musicSliderMouseDownHandler = e => {
         e.preventDefault();
         musicSlider.classList.add("active");
 
-        const shiftY = e.clientY - musicSlider.getBoundingClientRect().top;
+        const shiftY = getClientY(e) - musicSlider.getBoundingClientRect().top;
         const diffHeight = musicItem.offsetHeight - musicSlider.offsetHeight;
 
         const mouseMoveHandler = event => {
-            let top = event.clientY - shiftY - musicItem.getBoundingClientRect().top;
+            let top = getClientY(event) - shiftY - musicItem.getBoundingClientRect().top;
             if (top < 0) {
                 top = 0;
             } else if (top > diffHeight) {
@@ -244,24 +255,91 @@ const musicSliderHandler = () => {
         };
         
         document.addEventListener('mousemove', mouseMoveHandler);
-        document.addEventListener('mouseup', mouseUpHandler)
+        document.addEventListener('touchmove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+        document.addEventListener('touchend', mouseUpHandler);
+    }
+
+    musicSlider.addEventListener('mousedown', e => {
+        musicSliderMouseDownHandler(e);
+    });
+    musicSlider.addEventListener('touchstart', e => {
+        musicSliderMouseDownHandler(e);
     });
     
     musicSlider.ondragstart = () => false;
 
+    const songRefsRequest = (songId, callback) => {
+        if (songId === null)
+            return;
+
+        const url = `${BASE_URL}/articles/song/${songId}/refs/`;
+
+        fetch(url, {headers: {
+            'x-requested-with': 'XMLHttpRequest', 
+            'credentials': 'same-origin'
+        }})
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Произошла ошибка запроса');
+                }
+                return response.json();
+            })
+            .then(data => {
+                callback(data);
+            })
+            .catch(e => {
+                alert(e);
+            });
+    }
+
     songRefs.forEach(songItem => {
-        // элемент с песней / плейлистом
-        const songContainer = songItem.querySelector('.song__container');
-        // блок настроек для отображения слайдера
-        const songInfo = songItem.querySelector('.song__info');
+        const songBlockContainer = songItem.querySelector('.song__refs');
+        
         // кнопка показа виджетов
         const buttonSongRefs = songItem.querySelector('.open-refs');
 
+        const setSongRefElements = ({ html, is_enabled, elem, elemParent }) => {
+            elem.innerHTML = html;
+
+            if (is_enabled) {
+                setActiveSongs(currentService, elemParent);
+                showMusicSlider(elemParent);
+            }
+        }
+
         buttonSongRefs.addEventListener('click', e => {
-            songItem.classList.toggle('hidden');
+            // songItem.classList.toggle('hidden');
+            if (songBlockContainer.hasChildNodes()) {
+                songRefs.forEach((item, i) => {
+                    const elem = item.querySelector('.song__refs');
+                    if (i === 0) {
+                        songRefsRequest(
+                            item.dataset.id || null,
+                             data => setSongRefElements({...data, elem: elem})
+                        );
+                    } else {
+                        setSongRefElements({ html: '', is_enabled: false, elem: elem });
+                    }
+                });
+            } else {
+                songRefs.forEach(item => {
+                    const elem = item.querySelector('.song__refs');
+                    songRefsRequest(
+                        item.dataset.id || null, 
+                        data => setSongRefElements({...data, elem: elem, elemParent: item})
+                    );
+                });
+            }
         });
 
-        const showMusicSlider = () => {
+        const showMusicSlider = (elem = songItem) => {
+            // элемент с песней / плейлистом
+            const songContainer = elem.querySelector('.song__container');
+            // блок настроек для отображения слайдера
+            const songInfo = elem.querySelector('.song__info');
+            console.log(elem);
+
             const mouseEnterHandler = event => {
                 event.preventDefault();
                 

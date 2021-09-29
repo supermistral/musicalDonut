@@ -5,6 +5,7 @@ from django.db.models import Q, QuerySet
 from itertools import chain
 from django.http import Http404, JsonResponse, HttpRequest, HttpResponse
 from django.template.response import SimpleTemplateResponse
+from django.views.decorators.http import require_http_methods
 
 SORTING_MESS = {
     'date_asc': "Дата по возрастанию",
@@ -135,6 +136,7 @@ def handle_filtered_request(request: HttpRequest, articles: QuerySet or list,
     }
 
 
+@require_http_methods(['GET'])
 def main_page(request: HttpRequest) -> HttpResponse or JsonReponse:
     last_article = Article.ready_objects.first()
     articles = Article.ready_objects.all()
