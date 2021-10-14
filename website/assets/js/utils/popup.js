@@ -14,17 +14,19 @@ export const isPopupWrapperClicked = (el) => {
 };
 
 
-export const popupClickHandler = (item, callback = null) => {
+export const popupClickHandler = (item, callback = null, time = 0) => {
     document.body.classList.add("hidden");
 
     const fullscreenPopup = item.querySelector(POPUP_CSS_CLASSES.fullscreen) || item;
     
     fullscreenPopup.addEventListener('click', e => {
         if (isPopupWrapperClicked(e.target)) {
-            fullscreenPopup.remove();
-            document.body.classList.remove('hidden');
-            
             callback && callback();
+
+            setTimeout(() => {
+                fullscreenPopup.remove();
+                document.body.classList.remove('hidden');
+            }, time);
         }
     });
 };

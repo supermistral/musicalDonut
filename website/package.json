@@ -30,6 +30,7 @@
     "not dead"
   ],
   "dependencies": {
-    "@babel/runtime": "^7.15.4"
+    "@babel/runtime": "^7.15.4",
+    "dotenv": "^10.0.0"
   }
 }

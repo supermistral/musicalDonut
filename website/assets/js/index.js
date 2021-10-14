@@ -13,22 +13,86 @@ const imageInitClickHandler = () => {
     const wrapperContent = document.getElementById("content");
     const fullscreenClass = CSS_CLASSES.popup.fullscreen;
     const targetNoClickClass = CSS_CLASSES.popup.targetNoClick;
+    const imgMaxSize = 800;
 
     imagesWrappers.forEach(item => {
         item.addEventListener('click', (e) => {
-
+            const getImageCurrentClientRect = () => {
+                const imgClientRect = item.getBoundingClientRect();
+                const   imgStyleWidth = item.getAttribute("width"),
+                        imgStyleHeight = item.getAttribute("height"),
+                        imgMaxSize = imgClientRect.height,
+                        imgRealWidth = Math.min((imgStyleWidth / imgStyleHeight) * imgMaxSize, imgMaxSize),
+                        imgRealHeight = Math.min((imgStyleHeight / imgStyleWidth) * imgMaxSize, imgMaxSize);
+                
+                const   imgLeft = imgClientRect.left + (imgMaxSize - imgRealWidth) / 2,
+                        imgTop = imgClientRect.top + (imgMaxSize - imgRealHeight) / 2;
+                    
+                return {
+                    top: imgTop,
+                    left: imgLeft,
+                    width: imgRealWidth,
+                    height: imgRealHeight
+                };
+            } 
+            const { top, left, width, height } = getImageCurrentClientRect();
+            const imgSizeRatio = width / height;
+            
             const imageSrc = e.target.src;
             const imageAlt = e.target.alt;
 
-            let fullsizeWrapper = document.createElement('div');    
+            const fullsizeWrapper = document.createElement('div');    
             fullsizeWrapper.className = "img-fullsize__wrapper " + fullscreenClass;
             fullsizeWrapper.innerHTML = "<div class='img-fullsize__inner'>" +
-                "<img class='" + targetNoClickClass + "' src='" + imageSrc + "' alt='" + imageAlt + "'>" + 
-                "<div class='cross'></div></div></div>";
+                "<img class='" + targetNoClickClass + "' src='" + imageSrc + "' alt='" + imageAlt + 
+                "' style='top:" + top + "px;left:" + left + "px;width:" + width + 
+                "px;height:" + height + "px;'>" + "<button class='cross'></button></div></div>";
 
-            popupClickHandler(fullsizeWrapper);
+
+            const imgInner = fullsizeWrapper.firstChild;
+            const newImg = imgInner.firstChild;
+
+            const hideFullsizeWrapper = () => {
+                fullsizeWrapper.classList.remove('fixed');
+                fullsizeWrapper.classList.add('will-be-hidden');
+                const { top, left, width, height } = getImageCurrentClientRect();
+                newImg.style.top = top + "px";
+                newImg.style.left = left + "px";
+                newImg.style.width = width + "px";
+                newImg.style.height = height + "px";
+            }
+
+            popupClickHandler(fullsizeWrapper, hideFullsizeWrapper, 300);
 
             wrapperContent.append(fullsizeWrapper);
+
+            setTimeout(() => {
+                const clientRect = imgInner.getBoundingClientRect();
+                const   height = clientRect.height,
+                        width = clientRect.width;
+
+                let realHeight, 
+                    realWidth = imgSizeRatio * height;
+                
+                if (realWidth > width) {
+                    realWidth = width;
+                    realHeight = (1 / imgSizeRatio) * width;
+                } else {
+                    realHeight = height;
+                }
+                        
+                const   left = (fullsizeWrapper.clientWidth - realWidth) / 2,
+                        top = (fullsizeWrapper.clientHeight - realHeight) / 2;
+
+                newImg.style.top = top + "px";
+                newImg.style.left = left + "px";
+                newImg.style.width = realWidth + "px";
+                newImg.style.height = realHeight + "px";
+
+                setTimeout(() => {
+                    fullsizeWrapper.classList.add('fixed');
+                }, 300);
+            }, 0);
         });
     });
 };
@@ -115,7 +179,7 @@ const sliderHandler = () => {
 
 const musicSliderHandler = () => {
     // Список всех песен
-    const songRefs = document.querySelectorAll('.song__control');
+    const songRefs = document.querySelectorAll('.song-control');
     if (songRefs.length === 0)
         return;
 
@@ -169,7 +233,10 @@ const musicSliderHandler = () => {
     
     const setActiveSongs = (service, elem = null) => {
         const setActiveSong = (songRef) => {
-            const songContainer = songRef.querySelector('.song__container');
+            const songContainer = songRef.querySelector('.song-container');
+            if (songContainer === null) {
+                return;
+            }
 
             let activeSongBefore = null;
             for (let el of songContainer.children) {
@@ -273,7 +340,7 @@ const musicSliderHandler = () => {
         if (songId === null)
             return;
 
-        const url = `${BASE_URL}/articles/song/${songId}/refs/`;
+        const url = `${BASE_URL}/articles/song/${songId}/links/`;
 
         fetch(url, {headers: {
             'x-requested-with': 'XMLHttpRequest', 
@@ -294,15 +361,19 @@ const musicSliderHandler = () => {
     }
 
     songRefs.forEach(songItem => {
-        const songBlockContainer = songItem.querySelector('.song__refs');
+        const songBlockContainer = songItem.querySelector('.song-links');
         
         // кнопка показа виджетов
-        const buttonSongRefs = songItem.querySelector('.open-refs');
+        const buttonSongRefs = songItem.querySelector('.open-links');
 
         const setSongRefElements = ({ html, is_enabled, elem, elemParent }) => {
             elem.innerHTML = html;
 
             if (is_enabled) {
+                const vkScript = elem.querySelector('script');
+                if (vkScript) {
+                    eval(vkScript.innerHTML);
+                }
                 setActiveSongs(currentService, elemParent);
                 showMusicSlider(elemParent);
             }
@@ -312,7 +383,7 @@ const musicSliderHandler = () => {
             // songItem.classList.toggle('hidden');
             if (songBlockContainer.hasChildNodes()) {
                 songRefs.forEach((item, i) => {
-                    const elem = item.querySelector('.song__refs');
+                    const elem = item.querySelector('.song-links');
                     if (i === 0) {
                         songRefsRequest(
                             item.dataset.id || null,
@@ -324,7 +395,7 @@ const musicSliderHandler = () => {
                 });
             } else {
                 songRefs.forEach(item => {
-                    const elem = item.querySelector('.song__refs');
+                    const elem = item.querySelector('.song-links');
                     songRefsRequest(
                         item.dataset.id || null, 
                         data => setSongRefElements({...data, elem: elem, elemParent: item})
@@ -335,10 +406,13 @@ const musicSliderHandler = () => {
 
         const showMusicSlider = (elem = songItem) => {
             // элемент с песней / плейлистом
-            const songContainer = elem.querySelector('.song__container');
+            const songContainer = elem.querySelector('.song-container');
             // блок настроек для отображения слайдера
-            const songInfo = elem.querySelector('.song__info');
-            console.log(elem);
+            const songInfo = elem.querySelector('.song-info');
+
+            if (songInfo === null) {
+                return;
+            }
 
             const mouseEnterHandler = event => {
                 event.preventDefault();
@@ -549,6 +623,51 @@ const setArticleCardsTouchEvent = () => {
     }
 }
 
+const articleShareCopyLink = () => {
+    const copyElement = document.getElementById('copy-link');
+    if (!copyElement) return;
+
+    copyElement.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        copyElement.querySelector('input').select();
+        console.log(copyElement.querySelector('input'));
+        try {
+            const success = document.execCommand('copy');
+            if (success) {
+                const textElement = copyElement.querySelector('span.text');
+                if (!textElement.classList.contains('success')) {
+                    textElement.classList.add('success');
+                }
+                textElement.textContent = "Скопировано";
+            }
+        } catch (err) {
+            return;
+        }
+    });
+}
+
+const artilceScrollHandler = () => {
+    const readingScroll = document.querySelector('.reading-scroll');
+    if (!readingScroll) return;
+
+    const   article = document.querySelector('.article'),
+            articleHeight = article.getBoundingClientRect().bottom + scrollY,
+            windowHeight = document.documentElement.clientHeight,
+            scrollEnd = articleHeight - windowHeight,
+            scrollFactor = readingScroll.clientWidth / scrollEnd;
+
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.scrollY;
+
+        if (currentScroll <= scrollEnd) {
+            readingScroll.style.backgroundSize = scrollFactor * currentScroll + "px";
+        } else {
+            readingScroll.style.backgroundSize = '100%';
+        }
+    })
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     scrollHandler();
     searchFormClickHandler();
@@ -557,6 +676,8 @@ window.addEventListener('DOMContentLoaded', () => {
     sliderHandler();
     musicSliderHandler();
     setArticleCardsTouchEvent();
+    articleShareCopyLink();
+    artilceScrollHandler();
 });
 
 window.addEventListener('load', e => {
