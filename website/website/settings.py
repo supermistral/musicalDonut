@@ -55,8 +55,26 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     #'anymail',
 
+    # wagtail apps
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail.core',
+
+    'modelcluster',
+    'taggit',
+
     'accounts',
     'articles',
+    'core',
+    'menu',
     #'newsletter',
 ]
 
@@ -71,6 +89,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'website.urls'
@@ -80,6 +100,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'website', 'templates'),
+            os.path.join(BASE_DIR, 'core', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -88,11 +110,11 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'articles.context_processors.sections',
+                'wagtail.contrib.settings.context_processors.settings',
             ],
             'libraries': {
-                'music_refs': 'website.templatetags.music_refs',
                 'custom_filters': 'website.templatetags.custom_filters',
+                'menu': 'menu.templatetags.menu',
             }
         },
     },
@@ -144,7 +166,7 @@ TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
-USE_L10N = False
+USE_L10N = True
 
 USE_TZ = True
 
@@ -285,3 +307,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # DEFAULT_FROM_EMAIL = "noreply@musicaldonut.ru"
 
 # SERVER_EMAIL = "server@musicaldonut.ru"
+
+
+# Wagtail
+
+WAGTAIL_SITE_NAME = 'Musical Donut'

@@ -22,9 +22,9 @@
         <div id="wrapper">
             {% block header_including %}
                 {% if section_target %}
-                    {% include 'main/header.html' with section_target=section_target %}
+                    {% include 'wagtail/main/header.html' with section_target=section_target %}
                 {% else %}
-                    {% include 'main/header.html' %}
+                    {% include 'wagtail/main/header.html' %}
                 {% endif %}
             {% endblock header_including %}
 

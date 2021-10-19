@@ -1,0 +1,17 @@
+{{ self.formset.management_form }}
+
+<fieldset>
+  <legend>{{ self.heading }}</legend>
+  <ul class="fields">
+    {% if self.formset.non_form_errors %}
+      <li class="error-message">
+        {% for error in self.formset.non_form_errors %}
+          <span>{{ error|escape }}</span>
+        {% endfor %}
+      </li>
+    {% endif %}
+      {% for child in self.children %}
+        <li class="{{ child.classes|join:" " }}">{{ child.render_form_content }}</li>
+      {% endfor %}
+  </ul>
+</fieldset>

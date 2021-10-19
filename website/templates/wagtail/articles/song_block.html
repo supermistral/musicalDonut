@@ -1,0 +1,52 @@
+{% load wagtailcore_tags %}
+
+{% if self.title %}
+    <h3 class="subdivision-name">{{ self.title }}</h3>
+{% else %}
+<div class="song__data">
+    <h3 class="song-name">{{ self.song.full_name }}</h3>
+    {% if self.song.genre %}
+        <h4 class="song-genre">Жанр - {{ self.song.genre }}</h4>
+    {% endif %}
+    {% if self.song.date_release %}
+        <h4 class="song-release">Релиз - {{ self.song.date_release }}</h4>
+    {% endif %}
+</div>
+{% endif %}
+{% for block in self.content %}
+    <div class="subdivision__item">
+        {% if block.block_type == 'text' %}
+            {{ block.value|richtext }}
+        {% elif block.block_type == 'slider' %}
+            {% include_block block %}
+        {% endif %}
+    </div>
+{% endfor %}
+
+{% if self.song.links %}
+    {% with self.song.links as links %}
+    <div class="song-control" data-id="{{ self.song.id }}">
+        <div class="song-control-buttons">
+            <a class="open-links"><span class="text">Показать виджеты</span> <span class="icon"><i class="fas fa-sliders-h"></i></span></a>
+        </div>
+        <div class="song-links">
+            {% if request.COOKIES.song_links_enabled and request.COOKIES.song_links_enabled == '1' %}
+            <div class="song-container{% if self.song.is_album %} playlist{% endif %}">           
+                {% for link in links.widgets %}
+                    {% if link.code %}
+                        <div class="song" data-service="{{ link.provider }}">
+                            {% autoescape off %}{{ link.code }}{% endautoescape %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="song-info">
+                <div class="settings">
+                    <i class="fas fa-angle-double-right"></i>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endwith %}
+{% endif %}

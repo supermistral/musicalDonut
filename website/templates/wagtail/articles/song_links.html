@@ -1,0 +1,18 @@
+{% if song.links and enabled == '1' %}
+    {% with song.links as links %}
+        <div class="song-container{% if song.is_album %} playlist{% endif %}">           
+            {% for link in links.widgets %}
+                {% if link.code %}
+                    <div class="song" data-service="{{ link.provider }}">
+                        {% autoescape off %}{{ link.code }}{% endautoescape %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="song-info">
+            <div class="settings">
+                <i class="fas fa-angle-double-right"></i>
+            </div>
+        </div>
+    {% endwith %}
+{% endif %}

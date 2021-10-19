@@ -1,0 +1,17 @@
+<div class="song-preview">
+    {% if article.song %}
+    <div class="song-preview__info">
+        <div class="singer">{{ article.song.singers }}</div>
+        <div class="song">{{ article.song.name }}</div>
+    </div>
+    {% else %}
+        {% for sd in article.subdivisions.all %}
+            {% if sd.song %}
+            <div class="song-preview__info">
+                <div class="singer">{{ sd.song.singers }}</div>
+                <div class="song">{{ sd.song.name }}</div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>

@@ -12,45 +12,47 @@
                 <button class="filter-clear">
                     Очистить<span><i class="fas fa-times"></i></span>
                 </button>
-                {% with filters|get_item:"singers" as filter_singers %}
-                {% if filter_singers %}
-                    <div class="list-button">
-                        <div class="list-button-name">
-                            <div>Исполнители</div>
-                            <div class="list-button-name__icon"><i class="fas fa-caret-down"></i></div>
+                {% if filters %}
+                    {% with filters|get_item:"singers" as filter_singers %}
+                    {% if filter_singers %}
+                        <div class="list-button">
+                            <div class="list-button-name">
+                                <div>Исполнители</div>
+                                <div class="list-button-name__icon"><i class="fas fa-caret-down"></i></div>
+                            </div>
+                            <div class="singers" data-filter="singers">
+                                <!-- По согласованию -->
+                                {% for singer in filter_singers %}
+                                    <label class="filter-item">
+                                        <input type="checkbox" name="singers" value="{{ singer.value }}" data-textvalue="{{ singer.name }}"/>
+                                        <div>{{ singer.name }}<span>{{ singer.count }}</span></div>
+                                    </label>
+                                {% endfor %}
+                            </div>
                         </div>
-                        <div class="singers" data-filter="singers">
-                            <!-- По согласованию -->
-                            {% for singer in filter_singers %}
-                                <label class="filter-item">
-                                    <input type="checkbox" name="singers" value="{{ singer.value }}" data-textvalue="{{ singer.name }}"/>
-                                    <div>{{ singer.name }}<span>{{ singer.count }}</span></div>
-                                </label>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-                {% endwith %}
+                    {% endif %}
+                    {% endwith %}
 
-                {% with filters|get_item:"genres" as filter_genres %}
-                {% if filter_genres %}
-                    <div class="list-button">
-                        <div class="list-button-name">
-                            <div>Жанры</div>
-                            <div class="list-button-name__icon"><i class="fas fa-caret-down"></i></div>
+                    {% with filters|get_item:"genres" as filter_genres %}
+                    {% if filter_genres %}
+                        <div class="list-button">
+                            <div class="list-button-name">
+                                <div>Жанры</div>
+                                <div class="list-button-name__icon"><i class="fas fa-caret-down"></i></div>
+                            </div>
+                            <div class="singers" data-filter="genres">
+                                <!-- По согласованию -->
+                                {% for genre in filter_genres %}
+                                    <label class="filter-item">
+                                        <input type="checkbox" name="genres" value="{{ genre.value }}" data-textvalue="{{ genre.name }}"/>
+                                        <div>{{ genre.name }}<span>{{ genre.count }}</span></div>
+                                    </label>
+                                {% endfor %}
+                            </div>
                         </div>
-                        <div class="singers" data-filter="genres">
-                            <!-- По согласованию -->
-                            {% for genre in filter_genres %}
-                                <label class="filter-item">
-                                    <input type="checkbox" name="genres" value="{{ genre.value }}" data-textvalue="{{ genre.name }}"/>
-                                    <div>{{ genre.name }}<span>{{ genre.count }}</span></div>
-                                </label>
-                            {% endfor %}
-                        </div>
-                    </div>
+                    {% endif %}
+                    {% endwith %}
                 {% endif %}
-                {% endwith %}
             </div>
         </form>
     </div>

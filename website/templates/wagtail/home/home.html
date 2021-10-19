@@ -1,0 +1,75 @@
+{% extends 'index.html' %}
+
+{% block main_content %}
+
+{% load wagtailimages_tags wagtailuserbar menu %}
+
+{% get_menu "sections" as navigation %}
+
+<div class="content__first">
+    <div class="content-header">
+        <div class="content-header-background">
+            <picture>
+                {% image self.banner_image original as full_banner %}
+                <source media="(min-width: 768px)" srcset="{{ full_banner.url }}">
+                <img alt="">
+            </picture>
+            <!-- <img src="media/site/background.webp" alt="Фон шапки"> -->
+        </div>
+        <div class="content-header-container">
+            <div class="content-header-text-bottom">
+                <div class="content-header-text-bottom__container">
+                    <div class="search-button">
+                        <a class="search-button-link">
+                            <i class="fas fa-search"></i>
+                        </a>
+                    </div>
+                    <div class="header-sections">
+                        <div class="header-sections__content">
+                            {% for section in navigation.menu_items.all %}
+                                <a class="section" href="{{ section.link }}">
+                                    <div class="section-name">{{ section.title }}</div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="content-header-text-bottom__container-mobile">
+                    <div class="header-sections__mobile">
+                        <div class="header-sections__content">
+                            {% for section in navigation.menu_items.all %}
+                            <a class="section stylized-button" href="{{ section.link }}">
+                                <div class="section-name">{{ section.title }}</div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% include 'wagtail/articles/article_cards.html' with articles=last_article cover_section="1" card_classes="last-article" %}
+            <div class="musical-playlist"></div>
+        </div>
+    </div>
+    <!-- <h2>Последняя публикация</h2> -->
+</div>
+<div class="content__second">
+    <div class="content__above-articles">
+        <div class="content__articles-name">
+            <!-- <h2>Все статьи</h2> -->
+        </div>
+        <div class="control-buttons">
+            <div class="button-sorting">
+                {% include 'additions/sorting.html' with sorting_key=sorting_key|default:"date_desc" sorting_value=sorting_value|default:"Дата по убыванию" %}
+            </div>
+            <div class="button-filters">
+                {% include 'additions/filters.html' with filter_singers=filter_singers %}
+            </div>
+        </div>
+        <div class="selected-filters"></div>
+    </div>
+    <div class="content__articles">
+        {% include 'wagtail/articles/article_cards.html' with articles=articles cover_section="1" %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% load wagtailimages_tags %}
+
+{% for article in articles %}
+    <div class="article-card__wrapper{% if card_classes %} {{ card_classes }}{% endif %}">
+        <div class="article-card">
+            <div class="article-card-content">
+                <div class="article-img">
+                    {% image article.preview_image original %}
+                </div>
+                <div class="article-info">
+                    <div class="info">
+                        <div class="date">
+                            <div class="date-release">
+                                <span>
+                                    <i class="far fa-calendar-check"></i>
+                                </span> {{ article.first_published_at|date:"H:j d E" }}
+                            </div>
+                        </div>
+                        <div class="number">
+                            <div class="number-cover">№{{ article.number }}</div>
+                        </div>
+                    </div>
+                    {% include 'articles/song_preview.html' with article=article %}
+                </div>
+            </div>
+            <div class="article-cover">
+                {% if cover_section %}
+                    <a class="section" href="{{ article.get_parent.url }}">
+                        {{ article.get_parent.title }}
+                    </a>
+                {% endif %}
+                <a class="name{% if article.title|length > 130 %} short-name{% endif %}" href="{{ article.url }}">
+                    <div>
+                        {% if article.title|length > 130 %}
+                            <span>{{ article.name|slice:":130" }}...</span>
+                            <span class="full-name">{{ article.title }}</span>
+                        {% else %}
+                            <span class="true-name">{{ article.title }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+    </div>
+{% empty %}
+    <span>{{ empty_message|default:"Статьи скоро появятся" }}</span>
+{% endfor %}

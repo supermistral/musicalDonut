@@ -1,0 +1,64 @@
+{% extends 'index.html' %}
+
+{% block extra_head %}
+<script src="https://vk.com/js/api/openapi.js?169" type="text/javascript"></script>
+{% endblock %}
+
+{% block main_content %}
+
+{% load wagtailimages_tags wagtailcore_tags %}
+
+<div class="reading-scroll"></div>
+
+<div class="article">
+    <div class="article-info">
+        <h3 class="article-section">
+            <a href="{{ self.get_parent.url }}">{{ self.get_parent.title }}</a>
+        </h3>
+        <h1 class="article-name">{{ self.title }}</h1>
+        <h4 class="article-date-release">{{ self.go_live_at|date:"H:i d E" }}</h4>
+    </div>
+    <!--
+    <div class="article-img">
+        <img src="{{ article.image.url }}" alt="Обложка статьи">
+    </div>
+    -->
+    {% for block in self.content %}
+        <div class="subdivision">
+            {% include_block block %}
+        </div>
+    {% empty %}
+        <span>Статья на стадии доработки</span>
+    {% endfor %}
+    <div class="article-footer">
+        <div class="article-footer-left">
+            <div class="share">
+                <label class="share-button">
+                    <input type="checkbox">
+                    <button class="share-icon">
+                        {% include 'additions/icons/articles/share.html' %}
+                    </button>
+                    <div class="share-links">
+                        {% include 'wagtail/articles/share_links.html' %}
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div class="article-footer-right">
+            <div class="raiting">
+                <button class="raiting-negative">
+                    <i class="far fa-thumbs-up"></i>
+                </button>
+                <div class="raiting-score">
+                    0
+                </div>
+                <button class="raiting-positive">
+                    <i class="far fa-thumbs-up"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% include 'articles/music_refs.html' %}
+</div>
+
+{% endblock %}

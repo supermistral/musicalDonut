@@ -1,0 +1,48 @@
+{% load wagtailcore_tags wagtailimages_tags wagtailembeds_tags %}
+
+<div class='{{ class|default:"center" }}'>
+    {% if self|length > 1 %}
+        <div class="img-cover slider">
+            <div class="info">
+                <span>1</span> из {{ self|length }}
+            </div>
+            <a class="prev">
+                {% include 'additions/icons/slider/cross.html' %}
+            </a>
+            <a class="next">
+                {% include 'additions/icons/slider/cross.html' %}
+            </a>
+            <div class="slider-cover">
+                {% for block in self %}
+                    {% if block.block_type == 'image' %}
+                        <div class="item-img{% if forloop.first %} active{% endif %}">
+                            {% image block.value original %}
+                        </div>
+                    {% else %}
+                        <div class="item-video">
+                            {% embed block.value %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% if self.title %}
+                <div class="caption">{{ self.title }}</div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="img-cover">
+            {% if self.0.block_type == 'image' %}
+                <div class="item-img">
+                    {% image self.0.value original %}
+                </div>
+            {% else %}
+                <div class="item-video">
+                    {% embed self.0.value %}
+                </div>
+            {% endif %}
+            {% if self.title %}
+                <div class="caption">{{ self.title }}</div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
